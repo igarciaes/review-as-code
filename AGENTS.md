@@ -2,25 +2,37 @@
 
 This repository defines the Review as Code (RaC) specification and reference artifacts.
 
+## Roles of artifacts
+
+| Path | Role |
+|------|------|
+| `SPEC.md` | Normative RaC v0.1 protocol |
+| `SKILL.md` | Portable agent skill; conformant with the Agent Skills spec |
+| `AGENTS.md` | Repository instructions (this file) |
+| `examples/` | Non-normative reference review records |
+| `schemas/review.schema.json` | Optional validation support |
+| `CHANGELOG.md` | Release history (Keep a Changelog) |
+| `LICENSE` | MIT — © 2026 igarciaes and contributors |
+
 ## Source of truth
 
-`SPEC.md` is the normative source for RaC v0.1.
+`SPEC.md` is the normative source for RaC v0.1. When any other artifact conflicts with it, `SPEC.md` wins. Examples, the skill, and the schema are derived and must stay consistent.
 
-When modifying the repository:
+## Working in this repository
 
-1. Preserve consistency with `SPEC.md`.
-2. Keep `SKILL.md` aligned with the specification.
-3. Update examples when normative format or workflow changes.
-4. Keep schemas optional unless the specification explicitly changes.
-5. Do not introduce requirements tied to a specific AI platform into the core specification.
+- Prefer human-readable Markdown and platform-neutral language.
+- Do not introduce requirements tied to a specific AI platform into the core specification.
+- Work on `main`. Keep commits small and focused with concise, imperative messages (e.g. `docs:`, `feat:`, `fix:`).
+- Review `git diff` before committing; stage only intended files; never commit secrets.
 
-## Artifact roles
+## Building and validating
 
-- `SPEC.md`: normative protocol
-- `AGENTS.md`: repository instructions
-- `SKILL.md`: portable agent behavior
-- `examples/`: non-normative examples
-- `schemas/`: optional validation support
+This repository has no build step or automated test suite. Validation is manual:
+
+- confirm `SPEC.md` is coherent and uses normative language;
+- ensure `SKILL.md` stays aligned with `SPEC.md` and conformant with the Agent Skills spec (https://agentskills.io/specification), including valid `name`, `description`, and optional `license`/`metadata` frontmatter;
+- keep examples consistent with normative format or workflow changes;
+- validate examples against `schemas/review.schema.json` when applicable.
 
 ## Adopting RaC
 
@@ -28,14 +40,18 @@ When a repository uses Review as Code, read its `.review/README.md` when present
 
 ## Change discipline
 
-When changing a normative concept:
+When changing a normative concept, update all affected artifacts together:
 
-- update `SPEC.md`;
-- update the skill if agent behavior changes;
-- update affected examples;
-- update the schema if structured validation is affected;
-- add a `CHANGELOG.md` entry.
+- `SPEC.md` — the normative protocol;
+- `SKILL.md` — if agent behavior changes;
+- `examples/` — if normative format or workflow changes;
+- `schemas/` — if structured validation is affected;
+- `CHANGELOG.md` — add an entry.
 
 Do not change examples or the skill in a way that contradicts `SPEC.md`.
 
-Prefer human-readable Markdown and platform-neutral language.
+## Versioning and releases
+
+- The version is tracked in `SPEC.md` (`## Version`) and `CHANGELOG.md`.
+- Use Semantic Versioning and Keep a Changelog format.
+- To release: commit the changes, add a dated `CHANGELOG.md` entry, create an annotated tag (`git tag -a vX.Y.Z -m "..."`), then push the branch and tag.

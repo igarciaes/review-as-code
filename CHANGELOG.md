@@ -1,5 +1,11 @@
 # Changelog
 
+## [v0.1.2] - 2026-09-06
+
+### Changed
+
+- Restructured `AGENTS.md` with artifact role tables, building/validating guidance, git workflow conventions, and versioning/release notes.
+
 ## [v0.1.1] - 2026-09-06
 
 ### Changed
