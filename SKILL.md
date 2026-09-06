@@ -1,3 +1,12 @@
+---
+name: review-as-code
+description: Use to perform Review as Code (RaC) operations — review, implement, verify, inspect, and close — for code, documentation, specifications, and other reviewable artifacts. Follow SPEC.md when present; the specification is authoritative over this skill.
+license: MIT
+metadata:
+  author: igarciaes
+  version: 0.1.1
+---
+
 # Review as Code Skill
 
 ## Purpose
