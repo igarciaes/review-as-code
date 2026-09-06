@@ -1,0 +1,111 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Review as Code Review Record",
+  "type": "object",
+  "description": "Optional machine-readable projection of a RaC review. Markdown remains the canonical human-readable format.",
+  "required": [
+    "id",
+    "title",
+    "status",
+    "scope",
+    "findings"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^R[0-9]+$"
+    },
+    "title": {
+      "type": "string"
+    },
+    "type": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "Open",
+        "Closed"
+      ]
+    },
+    "scope": {
+      "type": "string"
+    },
+    "current_round": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "title",
+          "status"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^R[0-9]+-F[0-9]+$"
+          },
+          "title": {
+            "type": "string"
+          },
+          "round": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "severity": {
+            "type": "string",
+            "enum": [
+              "Critical",
+              "High",
+              "Medium",
+              "Low",
+              "Informational"
+            ]
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "Open",
+              "Discussing",
+              "Accepted",
+              "Accepted Alternative",
+              "Rejected",
+              "Accepted Risk",
+              "Deferred",
+              "In Progress",
+              "Resolved",
+              "Verified",
+              "Not Applicable",
+              "Stale"
+            ]
+          },
+          "location": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "recommendation": {
+            "type": "string"
+          },
+          "decision": {
+            "type": "string"
+          },
+          "acceptance": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "verification": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

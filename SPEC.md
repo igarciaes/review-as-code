@@ -1,0 +1,631 @@
+# Review as Code Specification
+
+## Version
+
+**RaC v0.1**
+
+## 1. Purpose
+
+Review as Code (RaC) defines a Git-native, human-readable protocol for recording and managing reviews of repository artifacts.
+
+RaC applies to source code, documentation, specifications, requirements, architecture, configuration, and other reviewable artifacts.
+
+The goals of RaC are to:
+
+- make review findings durable and version controlled;
+- support multiple reviews in the same repository;
+- support multiple rounds within a review;
+- remain easy for humans to read and edit;
+- provide explicit semantics for AI agents;
+- separate review, discussion, implementation, and verification.
+
+## 2. Normative language
+
+The terms **MUST**, **MUST NOT**, **SHOULD**, **SHOULD NOT**, and **MAY** are normative.
+
+## 3. Core principles
+
+### 3.1 Human-friendly first
+
+Review records MUST be human-readable. Markdown is the canonical default representation.
+
+### 3.2 Git native
+
+Review records SHOULD be version controlled alongside the work they review.
+
+### 3.3 Review independence
+
+The reviewer owns the review artifact. The author or implementer owns the reviewed artifacts.
+
+A reviewer MUST NOT modify artifacts under review while acting as reviewer.
+
+An implementer MUST NOT modify reviewer-owned review records while acting as implementer.
+
+### 3.4 Discussion is separate
+
+The review record MUST NOT be used as a conversation transcript.
+
+Discussion MAY occur in pull requests, issues, chat, meetings, or other systems.
+
+The review record SHOULD capture the resulting decision and rationale concisely.
+
+### 3.5 Explicit decisions
+
+A recommendation is not permission to modify an artifact.
+
+An actionable change requires an explicit accepted decision or explicit instruction from an authorized human.
+
+### 3.6 Independent verification
+
+Implementation and verification are distinct operations.
+
+An implementer MUST NOT mark a finding as verified on behalf of the reviewer.
+
+### 3.7 Stable identity
+
+Reviews and findings MUST have stable identifiers.
+
+Identifiers MUST NOT change when wording, status, or implementation changes.
+
+## 4. Terminology
+
+### Review
+
+A durable assessment process covering one or more artifacts for a defined purpose and scope.
+
+A review MAY contain multiple review rounds.
+
+### Review round
+
+One iteration of review, discussion/decision, implementation, and verification within an open review.
+
+A new round does not create a new review.
+
+### Finding
+
+An observation, concern, recommendation, or other review result recorded within a review.
+
+### Decision
+
+The agreed outcome for a finding.
+
+### Implementation
+
+A change to reviewed artifacts intended to satisfy an accepted decision.
+
+### Verification
+
+An independent assessment that implementation satisfies the decision and applicable acceptance criteria.
+
+### Scope
+
+The set of reviewed artifacts covered by a review, expressed as file paths, directory paths, or other artifact references.
+
+### Purpose
+
+The reason or objective for conducting a review, expressed as free text.
+
+### Acceptance criteria
+
+Observable conditions that must be satisfied before an implementation satisfies a decision.
+
+### Author
+
+The person or agent who created or maintains the reviewed artifacts. Synonymous with implementer when acting in an implementation capacity.
+
+### Review owner
+
+The person or agent currently authorized to write review records for a given review. Typically the reviewer.
+
+### Terminal outcome
+
+A finding state that represents a final disposition requiring no further action within the current review.
+
+Terminal outcomes are: Verified, Rejected, Accepted Risk, Deferred, Not Applicable, Stale.
+
+All other states (Open, Discussing, Accepted, Accepted Alternative, In Progress, Resolved) are non-terminal.
+
+### Reviewed artifacts
+
+The code, documents, specifications, or other artifacts being assessed.
+
+## 5. Repository model
+
+A repository MAY contain many reviews.
+
+The default layout is:
+
+```text
+.review/
+├── README.md
+└── reviews/
+    ├── R001.md
+    ├── R002.md
+    └── R003.md
+```
+
+Repositories MAY define another layout in `.review/README.md`.
+
+A single global review file SHOULD NOT be used to represent multiple unrelated reviews.
+
+### 5.1 Review README
+
+`.review/README.md` describes the repository's review layout and conventions.
+
+It SHOULD document:
+
+- the review layout and the paths of review records;
+- the review ID convention (for example `R###`);
+- the finding ID convention (for example `R###-F###`);
+- how rounds are represented;
+- the controlled status vocabulary when a subset is used;
+- the severity vocabulary when a subset is used;
+- the active reviews and closed reviews when useful.
+
+It MAY override the default layout described above.
+
+It MUST remain human-readable and SHOULD be readable by agents for discovery.
+
+Example:
+
+```markdown
+# Review as Code
+
+Reviews are stored under `reviews/` in this repository.
+
+## Layout
+
+Each review is a single Markdown file under `reviews/`.
+- IDs follow `R###` (for example `R042`).
+- Findings follow `R###-F###` (for example `R042-F001`).
+- Rounds are represented as sections within the review file.
+
+## Status
+
+This repository uses the full RaC vocabulary from the specification.
+
+## Severity
+
+Critical, High, Medium, Low, Informational.
+
+## Active reviews
+
+- R042 — Payment API
+- R055 — Multi-Round Service
+```
+
+## 6. Review records
+
+Each review record MUST contain:
+
+- stable review ID;
+- title or purpose;
+- review status;
+- scope;
+- findings or an explicit statement that no findings were produced.
+
+Recommended metadata:
+
+- type;
+- reviewer;
+- created date;
+- related review;
+- current round.
+
+Example:
+
+```markdown
+# R042 — Payment API Review
+
+**Type:** Code
+**Status:** Open
+**Scope:** `src/payment/`
+**Reviewer:** Alice
+**Created:** 2026-09-06
+
+## Findings
+```
+
+## 7. Review rounds
+
+A review MAY contain one or more rounds.
+
+A round represents a review iteration, not a separate review identity.
+
+A review remains open until the reviewer closes it.
+
+Example:
+
+```text
+R042
+├── Round 1 — Initial review
+├── Round 2 — Follow-up
+└── Round 3 — Final verification
+```
+
+A review MAY have verified findings while remaining open because other findings require further work.
+
+New findings discovered during a later round MUST receive new stable finding IDs.
+
+Previously recorded findings SHOULD retain their original IDs.
+
+A round MAY be represented as metadata, a dedicated section, or another human-readable convention defined by the repository.
+
+## 8. Findings
+
+Each finding MUST have a stable ID within its review.
+
+Recommended format:
+
+```text
+R042-F001
+R042-F002
+```
+
+A finding SHOULD contain:
+
+- ID;
+- title;
+- severity when applicable;
+- status;
+- location when applicable;
+- description;
+- recommendation when applicable;
+- decision when known;
+- acceptance criteria when actionable;
+- verification evidence when verified.
+
+Example:
+
+```markdown
+### R042-F001 — Missing request timeout
+
+**Round:** 1
+**Severity:** Medium
+**Status:** Open
+**Location:** `src/payment/client.ts`
+
+The outbound request has no explicit timeout.
+
+**Recommendation**
+
+Configure an explicit timeout.
+
+**Acceptance**
+
+- [ ] A timeout is configured.
+- [ ] Timeout behavior is tested.
+```
+
+## 9. Severity
+
+Recommended severity values are:
+
+- Critical
+- High
+- Medium
+- Low
+- Informational
+
+Severity communicates impact and does not force acceptance.
+
+## 10. Finding states and decisions
+
+Recommended states are:
+
+- Open
+- Discussing
+- Accepted
+- Accepted Alternative
+- Rejected
+- Accepted Risk
+- Deferred
+- In Progress
+- Resolved
+- Verified
+- Not Applicable
+- Stale
+
+Repositories MAY define a smaller controlled vocabulary.
+
+### Open
+
+The finding has been raised and has no final decision.
+
+### Discussing
+
+The finding is being discussed and no final decision exists.
+
+### Accepted
+
+The recommended change or concern has been accepted.
+
+### Accepted Alternative
+
+A different solution has been accepted.
+
+### Rejected
+
+No change will be made in response to the finding.
+
+### Accepted Risk
+
+The concern is acknowledged and intentionally accepted without remediation.
+
+### Deferred
+
+The finding is valid but implementation is intentionally postponed.
+
+### In Progress
+
+Implementation is underway.
+
+### Resolved
+
+Implementation has been completed but independent verification remains.
+
+### Verified
+
+The reviewer has verified that the decision and acceptance criteria are satisfied.
+
+### Not Applicable
+
+The finding does not apply.
+
+### Stale
+
+The underlying condition changed such that the finding no longer applies. Stale is not equivalent to verified.
+
+## 11. Decision recording
+
+Decisions SHOULD record:
+
+- outcome;
+- concise rationale where useful;
+- alternative approach when applicable.
+
+The review record SHOULD record the result of discussion, not reproduce the discussion.
+
+Example:
+
+```markdown
+**Decision:** Accepted Alternative
+
+The timeout will be configured in the shared HTTP client.
+
+**Rationale:** This provides consistent behavior for all outbound clients.
+```
+
+## 12. Ownership
+
+### Reviewer
+
+When acting as reviewer:
+
+- READ reviewed artifacts;
+- WRITE review artifacts;
+- MUST NOT modify reviewed artifacts.
+
+### Implementer
+
+When acting as implementer:
+
+- READ reviewed artifacts and applicable review artifacts;
+- WRITE reviewed artifacts;
+- MUST NOT modify reviewer-owned review artifacts.
+
+### Verifier
+
+When acting as verifier:
+
+- READ reviewed artifacts and review artifacts;
+- WRITE verification results to review artifacts;
+- MUST NOT modify reviewed artifacts merely to make verification pass.
+
+The same person or agent MAY perform different roles at different times, but MUST respect the boundaries of the current operation.
+
+The terms "author" and "implementer" are used interchangeably throughout this specification when referring to the person or agent who owns and modifies the reviewed artifacts.
+
+## 13. Workflow
+
+### 13.1 Create or open a review
+
+A review context is created for a defined scope and purpose.
+
+### 13.2 Review round
+
+The reviewer inspects the reviewed artifacts and records findings.
+
+### 13.3 Discussion
+
+Participants discuss findings outside the review artifact when agreement is required.
+
+### 13.4 Decision
+
+The resulting decision is recorded in the review artifact by the reviewer or another explicitly authorized review owner.
+
+### 13.5 Implementation
+
+The author or implementer reads accepted decisions and modifies the reviewed artifacts.
+
+The implementer MUST NOT silently reinterpret an unaccepted finding as accepted.
+
+### 13.6 Verification
+
+The reviewer independently inspects the resulting artifacts and records verification evidence.
+
+### 13.7 Additional rounds
+
+If further work is required, the review continues with another round.
+
+### 13.8 Closure
+
+The reviewer MAY close the review when all applicable findings have terminal outcomes and the review purpose is complete.
+
+Terminal outcomes are defined in Section 4 and include: Verified, Rejected, Accepted Risk, Deferred, Not Applicable, and Stale.
+
+### 13.9 Conflict resolution
+
+If participants cannot reach agreement on a finding, the review owner or a designated arbiter MAY record a decision with a rationale that includes a summary of the disagreement.
+
+The finding progresses once an authorized decision is recorded, regardless of ongoing disagreement.
+
+### 13.10 Decision revocation
+
+An accepted finding MAY be reopened if new information makes the decision infeasible.
+
+Revocation requires explicit authorization from the review owner.
+
+The finding returns to Discussing or Open with a note referencing the revoked decision.
+
+Implementation MUST NOT proceed on revoked decisions.
+
+### 13.11 Reviewer handoff
+
+A review MAY be transferred to a new reviewer.
+
+Transfer requires explicit authorization, such as a commit message, pull request approval, or review record annotation.
+
+The review record SHOULD document the transfer with date and rationale.
+
+## 14. Workflow model
+
+```text
+Author changes artifacts
+        |
+        v
+Reviewer creates/opens review
+        |
+        v
+Review round
+        |
+        v
+Findings
+        |
+        v
+External discussion
+        |
+        v
+Decision recorded
+        |
+        v
+Implementer changes artifacts
+        |
+        v
+Reviewer verifies
+        |
+   +----+----+
+   |         |
+more work   complete
+   |         |
+   v         v
+next round  close review
+```
+
+## 15. Multiple reviews
+
+A repository MAY contain multiple independent reviews.
+
+Examples:
+
+- architecture review;
+- implementation review;
+- security review;
+- documentation review;
+- final verification review.
+
+A new review SHOULD be created for a genuinely new purpose or scope.
+
+A new round SHOULD be used for continued iteration within the same review.
+
+## 16. Review relationships
+
+Reviews MAY reference other reviews.
+
+Recommended relationship types:
+
+- Follows
+- Verifies
+- Supersedes
+- Expands
+- Related To
+
+Example:
+
+```markdown
+**Related review:** R042
+**Relationship:** Verifies
+```
+
+Historical review records SHOULD NOT be rewritten merely because a later review exists.
+
+## 17. Agent interoperability
+
+Agents MUST distinguish:
+
+```text
+Observation
+Recommendation
+Decision
+Implementation
+Verification
+```
+
+These concepts are not interchangeable.
+
+Agents MUST determine their current operation and ownership boundary before writing.
+
+"Silently" means without recording a rationale or without a human-visible notification. Status changes to the review record MUST include a rationale or reference to an external decision.
+
+Agents MUST NOT:
+
+- implement an Open or Discussing finding without explicit authorization;
+- modify reviewer-owned records while acting as implementer;
+- modify reviewed artifacts while acting as reviewer;
+- claim verification without evidence;
+- silently close a review.
+
+### 17.1 Discovery
+
+Before operating, an agent SHOULD:
+
+1. identify which review is applicable to the requested scope and purpose;
+2. determine the current review round;
+3. identify the agent's assigned role and corresponding ownership boundary;
+4. read applicable review records and reviewed artifacts;
+5. consult the machine-readable schema where available for validation.
+
+### 17.2 Handoff between agents
+
+When one agent completes an operation, the review record SHOULD be updated before another agent operates.
+
+An implementing agent SHOULD update the finding status to In Progress or Resolved before proceeding.
+
+A verifying agent SHOULD read the current finding status and decision before verifying.
+
+State transitions SHOULD be documented by the agent in the review record.
+
+## 18. Human-readable format
+
+Markdown is the canonical default format.
+
+Machine-readable representations MAY be generated for validation or automation but SHOULD NOT replace the human-readable review record.
+
+## 19. Conformance
+
+A RaC implementation conforms to v0.1 when it:
+
+1. supports multiple review records;
+2. provides stable review and finding IDs;
+3. supports multiple rounds within a review;
+4. preserves reviewer/reviewed-artifact ownership boundaries;
+5. separates discussion from the review record;
+6. distinguishes recommendations from decisions;
+7. distinguishes implementation from verification;
+8. provides a human-readable review representation.
+
+## 20. Fundamental invariant
+
+> The reviewer reviews. The implementer implements. The reviewer verifies.
+
+The same human or agent MAY perform multiple roles at different times, but MUST NOT collapse ownership boundaries within a single operation.
