@@ -1,8 +1,9 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://review-as-code.dev/schemas/review.schema.json",
   "title": "Review as Code Review Record",
   "type": "object",
-  "description": "Optional machine-readable projection of a RaC review. Markdown remains the canonical human-readable format.",
+  "description": "Optional machine-readable projection of a RaC review, derived per SPEC Section 18.1. Markdown remains the canonical human-readable format. Additional properties are permitted at the record level so repositories MAY extend records.",
   "required": [
     "id",
     "title",
@@ -23,6 +24,7 @@
     },
     "status": {
       "type": "string",
+      "description": "Review status. Recommended values: Open, Closed.",
       "enum": [
         "Open",
         "Closed"
@@ -35,6 +37,19 @@
       "type": "integer",
       "minimum": 1
     },
+    "rac_version": {
+      "type": "string",
+      "description": "The RaC protocol version the record was written against."
+    },
+    "closed_date": {
+      "type": "string",
+      "format": "date",
+      "description": "The date the review was closed, projected from the closure record (SPEC Section 13.9)."
+    },
+    "outcome": {
+      "type": "string",
+      "description": "Optional outcome summary projected from the Review Outcome section (SPEC Section 13.9)."
+    },
     "findings": {
       "type": "array",
       "items": {
@@ -44,6 +59,7 @@
           "title",
           "status"
         ],
+        "additionalProperties": false,
         "properties": {
           "id": {
             "type": "string",
@@ -93,7 +109,8 @@
             "type": "string"
           },
           "decision": {
-            "type": "string"
+            "type": "string",
+            "description": "The agreed outcome for the finding. Recommended values from SPEC Section 10: Accepted, Accepted Alternative, Rejected, Accepted Risk, Deferred, Not Applicable, Stale. Repositories MAY use other values."
           },
           "acceptance": {
             "type": "array",
