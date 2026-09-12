@@ -12,6 +12,7 @@ Does the shared HTTP client already expose a timeout option, or must we add one?
 ## FB002 — Response
 
 **Author:** Implementer
+**Identity:** Bob
 **Date:** 2026-09-07
 
 The shared client exposes `timeoutMs`; we can set it at the call site.

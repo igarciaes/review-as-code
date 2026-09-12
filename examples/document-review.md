@@ -13,7 +13,7 @@
 
 **Round:** 1
 **Severity:** Low
-**Status:** Open
+**Status:** Discussing
 **Location:** `docs/payment-api.md`, Introduction
 
 The document uses the term "tenant" without defining it.
@@ -21,8 +21,6 @@ The document uses the term "tenant" without defining it.
 **Recommendation**
 
 Define the term when it is first introduced.
-
-**Decision:** Discussing
 
 ---
 

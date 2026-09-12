@@ -24,7 +24,7 @@ Configure an explicit timeout.
 
 **Decision:** Accepted
 
-Feedback for this finding: [R042-F001 feedback thread](../feedback/R042-F001.md).
+Feedback for this finding: [R042-F001 feedback thread](feedback-loop.md).
 
 **Acceptance**
 
@@ -37,7 +37,7 @@ Verified in Round 2.
 
 **Evidence**
 
-Payment client timeout tests pass.
+`npm test -- payment-client` (timeout tests) pass.
 
 ---
 
@@ -45,7 +45,7 @@ Payment client timeout tests pass.
 
 **Round:** 1
 **Severity:** High
-**Status:** Open
+**Status:** Accepted Alternative
 **Location:** `src/payment/retry.ts`
 
 Timeout failures are treated as permanent errors.
@@ -68,7 +68,7 @@ Retry classification will be centralized in the shared transport layer.
 
 R042-F001 was verified.
 
-R042-F002 remains open for implementation and verification.
+R042-F002 is accepted and awaits implementation and verification.
 
 ## Review Outcome
 

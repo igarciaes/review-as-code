@@ -1,11 +1,12 @@
 # R055 — Multi-Round Service Review
 
 **Type:** Code
-**Status:** Open
+**Status:** Closed
 **Scope:** `src/service/`
 **Reviewer:** Example Reviewer
 **Created:** 2026-09-06
 **Current Round:** 3
+**RaC version:** v0.2.3
 
 ## Review Rounds
 
@@ -77,5 +78,6 @@ Cancellation reason metrics were added and verified during Round 3.
 ## Review Outcome
 
 **Status:** Closed
+**Closed:** 2026-09-12
 
 All applicable findings reached terminal outcomes after three review rounds.
