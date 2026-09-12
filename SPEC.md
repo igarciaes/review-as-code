@@ -106,6 +106,8 @@ An independent assessment that implementation satisfies the decision and applica
 
 The set of reviewed artifacts covered by a review, expressed as file paths, directory paths, or other artifact references.
 
+When a review covers a changeset, the scope SHOULD include a commit or pull-request reference so the review remains reproducible.
+
 ### Purpose
 
 The reason or objective for conducting a review, expressed as free text.
@@ -172,6 +174,8 @@ Repositories MAY define another layout in `.review/README.md`.
 
 A single global review file SHOULD NOT be used to represent multiple unrelated reviews.
 
+Before allocating a new review ID, an agent SHOULD scan the existing review records and take the next sequential unused ID (for example, the next `R###` number). The allocation convention MAY be documented in `.review/README.md`.
+
 ### 5.1 Review README
 
 `.review/README.md` describes the repository's review layout and conventions.
@@ -230,7 +234,7 @@ Each review record MUST contain:
 
 - stable review ID;
 - title or purpose;
-- review status;
+- review status (`Open` or `Closed`);
 - scope;
 - findings or an explicit statement that no findings were produced.
 
@@ -240,7 +244,8 @@ Recommended metadata:
 - reviewer;
 - created date;
 - related review;
-- current round.
+- current round;
+- RaC version (the protocol version the record was written against, for forward compatibility).
 
 Example:
 
@@ -252,6 +257,7 @@ Example:
 **Scope:** `src/payment/`
 **Reviewer:** Alice
 **Created:** 2026-09-06
+**RaC version:** v0.2.3
 
 ## Findings
 ```
@@ -304,6 +310,8 @@ A finding SHOULD contain:
 - decision when known;
 - acceptance criteria when actionable;
 - verification evidence when verified.
+
+Verification evidence SHOULD be reproducible, for example by recording the commands, test names, or commit references used to verify.
 
 Example:
 
@@ -424,6 +432,23 @@ Recommended states are:
 - Stale
 
 Repositories MAY define a smaller controlled vocabulary.
+
+The following table defines the default legal transitions between states. It is the recommended baseline; repositories MAY delegate transition control to a narrower set defined in `.review/README.md`.
+
+| Current state | Legal transitions |
+|---------------|-------------------|
+| Open | Discussing; any decision outcome (Accepted, Accepted Alternative, Rejected, Accepted Risk, Deferred, Not Applicable, Stale) |
+| Discussing | Open; any decision outcome |
+| Accepted | Accepted Alternative; In Progress |
+| Accepted Alternative | Accepted; In Progress |
+| In Progress | Resolved |
+| Resolved | In Progress (rework); Verified |
+| Verified | terminal within the current review; reopening governed by Section 13.11 |
+| Rejected, Accepted Risk, Deferred, Not Applicable, Stale | terminal within the current review; reopening governed by Section 13.11 |
+
+Opening or participating in a feedback thread (Section 8.5) MAY be reflected by setting the finding status to Discussing.
+
+A Stale finding reflects a changed underlying condition and is not equivalent to verified. A Stale finding MAY be reopened, with the review owner's authorization, if the condition changes such that the finding applies again; reopening is governed by Section 13.11.
 
 ### Open
 
@@ -573,6 +598,8 @@ If further work is required, the review continues with another round.
 
 The reviewer MAY close the review when all applicable findings have terminal outcomes and the review purpose is complete.
 
+On closure, the reviewer sets the record status to `Closed` and SHOULD record a closure date and a concise rationale for closure. The reviewer MAY include an optional outcome summary section (for example `## Review Outcome`) summarizing the outcome.
+
 Terminal outcomes are defined in Section 4 and include: Verified, Rejected, Accepted Risk, Deferred, Not Applicable, and Stale.
 
 ### 13.10 Conflict resolution
@@ -711,11 +738,13 @@ Before operating, an agent SHOULD:
 
 When one agent completes an operation, the review record SHOULD be updated before another agent operates.
 
-An implementing agent SHOULD update the finding status to In Progress or Resolved before proceeding.
+Finding status changes are recorded by the review owner. An implementing agent MUST NOT write the review record; it reports progress and completion through its own feedback items (Section 8.5).
+
+The review owner SHOULD record implementer-reported status changes promptly.
 
 A verifying agent SHOULD read the current finding status and decision before verifying.
 
-State transitions SHOULD be documented by the agent in the review record.
+State transitions SHOULD be documented by the review owner in the review record.
 
 ## 18. Human-readable format
 
