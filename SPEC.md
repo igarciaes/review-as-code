@@ -800,7 +800,7 @@ Feedback thread (`schemas/feedback.schema.json`):
 | Markdown element | Schema property |
 |------------------|-----------------|
 | `# R042-F001 — Feedback thread` heading | `review_id` (`R042`) and `finding_id` (`R042-F001`) |
-| `## FB001 — Clarification` heading | item `id` (`FB001`) and item `kind` (text after the em dash) |
+| `## FB001 — Clarification` heading | item `id` (the full `R042-F001-FB001`, derived from the finding ID and the `FB###` number) and item `kind` (text after the em dash) |
 | `**Author:**` line | item `author_role` |
 | `**Identity:**` line (optional) | item `author` |
 | `**Date:**` line | item `date` |
