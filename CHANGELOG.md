@@ -1,5 +1,13 @@
 # Changelog
 
+## [v0.2.3] - 2026-09-12
+
+### Added
+
+- Reviewer decisions for all 12 R001 findings (all Accepted), with amended acceptance criteria for R001-F001, R001-F004, and R001-F009.
+- Reviewer feedback responses (`FB002`) in the R001-F001, R001-F004, R001-F005, R001-F006, R001-F009, and R001-F011 threads.
+- Version references synced to RaC v0.2.3 across `SPEC.md`, `README.md`, and `SKILL.md`.
+
 ## [v0.2.2] - 2026-09-12
 
 ### Added

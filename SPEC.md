@@ -2,7 +2,7 @@
 
 ## Version
 
-**RaC v0.2.2**
+**RaC v0.2.3**
 
 ## 1. Purpose
 
@@ -725,7 +725,7 @@ Machine-readable representations MAY be generated for validation or automation b
 
 ## 19. Conformance
 
-A RaC implementation conforms to v0.2.2 when it:
+A RaC implementation conforms to v0.2.3 when it:
 
 1. supports multiple review records;
 2. provides stable review and finding IDs;
