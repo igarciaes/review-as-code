@@ -367,6 +367,21 @@ A feedback item SHOULD contain:
 - date;
 - content.
 
+A feedback item MAY contain an author identity (for example a name or agent ID) alongside the role.
+
+Recommended item heading format and kinds:
+
+```text
+## FB001 — Clarification
+## FB002 — Response
+## FB003 — Report
+## FB004 — Confirmation
+```
+
+Recommended kinds are: Clarification, Response, Report, and Confirmation. Report covers progress and completion reports from the implementer under the handoff rule in Section 17.2.
+
+Feedback participants include reviewers, implementers, and verifiers. A repository MAY extend the role vocabulary.
+
 Example:
 
 ```markdown
@@ -384,6 +399,7 @@ Does the shared HTTP client already expose a timeout option, or must we add one?
 ## FB002 — Response
 
 **Author:** Implementer
+**Identity:** Bob
 **Date:** 2026-09-07
 
 The shared client exposes `timeoutMs`; we can set it at the call site.
@@ -751,6 +767,46 @@ State transitions SHOULD be documented by the review owner in the review record.
 Markdown is the canonical default format.
 
 Machine-readable representations MAY be generated for validation or automation but SHOULD NOT replace the human-readable review record.
+
+### 18.1 Markdown-to-schema projection
+
+The optional schemas in `schemas/` are machine-readable projections of the Markdown records. This section defines how each projection is derived.
+
+Review record (`schemas/review.schema.json`):
+
+| Markdown element | Schema property |
+|------------------|-----------------|
+| `# R042 — Title` heading | `id` (`R042`) and `title` (text after the em dash) |
+| `**Type:**` | `type` |
+| `**Status:**` | `status` |
+| `**Scope:**` | `scope` |
+| `**Current Round:**` | `current_round` (integer) |
+| `**RaC version:**` | `rac_version` |
+| Closure: record status `Closed` with `**Closed:** <date>` | `status: "Closed"` and `closed_date` |
+| Optional `## Review Outcome` section content | `outcome` |
+| `### R042-F001 — Title` heading | finding `id` (`R042-F001`) and `title` |
+| Finding `**Round:**` | finding `round` (integer) |
+| Finding `**Severity:**` | finding `severity` |
+| Finding `**Status:**` | finding `status` |
+| Finding `**Location:**` | finding `location` |
+| Finding description paragraph | finding `description` |
+| `**Recommendation**` section | finding `recommendation` |
+| `**Decision:**` line | finding `decision` |
+| `**Acceptance**` checkbox list | finding `acceptance` (array of item text without the `- [ ]` markers) |
+| `**Verification**` / `**Evidence**` content | finding `verification` |
+
+Feedback thread (`schemas/feedback.schema.json`):
+
+| Markdown element | Schema property |
+|------------------|-----------------|
+| `# R042-F001 — Feedback thread` heading | `review_id` (`R042`) and `finding_id` (`R042-F001`) |
+| `## FB001 — Clarification` heading | item `id` (`FB001`) and item `kind` (text after the em dash) |
+| `**Author:**` line | item `author_role` |
+| `**Identity:**` line (optional) | item `author` |
+| `**Date:**` line | item `date` |
+| Item content paragraph | item `content` |
+
+Fields that appear in the Markdown but have no schema property (for example `**Reviewer:**`, `**Created:**`, and feedback links) are not projected.
 
 ## 19. Conformance
 
