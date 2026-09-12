@@ -21,9 +21,10 @@ Before acting:
 
 1. Read repository instructions such as `AGENTS.md`.
 2. Locate `.review/README.md` if present and read it for layout, ID formats, controlled vocabulary, and active reviews.
-3. Locate existing review records.
-4. Identify the requested review scope and operation.
-5. Determine whether an existing review is applicable.
+3. Locate existing review records and applicable feedback threads.
+4. Identify the applicable review, the current review round, and the requested scope and operation.
+5. Determine the assigned role and ownership boundary.
+6. Determine whether an existing review is applicable.
 
 Default layout:
 
@@ -93,6 +94,7 @@ DO NOT WRITE:
 3. Respect acceptance criteria.
 4. Validate changes.
 5. Report ambiguity rather than silently changing decisions.
+6. Report progress and completion through your own feedback items (Section 8.5); do not write the review record.
 
 Do not mark findings Verified.
 
@@ -116,7 +118,7 @@ DO NOT WRITE:
 2. Read the decision and acceptance criteria.
 3. Inspect current artifacts independently.
 4. Run appropriate validation.
-5. Record evidence.
+5. Record evidence. Evidence SHOULD be reproducible (for example commands, test names, or commit references).
 6. Mark Verified only when criteria are satisfied.
 7. If work remains, keep the review open and continue with another round as appropriate.
 
@@ -146,6 +148,48 @@ DO NOT WRITE:
 6. Keep the item substantive and decision-relevant; do not reproduce conversational chatter.
 7. Do not change the finding status or decision. Decisions are recorded in the review record by the review owner.
 8. Do not edit or renumber existing feedback items.
+
+## Inspect operation
+
+### Permissions
+
+READ:
+- reviewed artifacts
+- review records
+- applicable feedback threads
+
+DO NOT WRITE:
+- reviewed artifacts
+- review records
+- feedback threads
+
+### Procedure
+
+1. Identify the applicable review and current round.
+2. Read the review record, applicable feedback threads, and reviewed artifacts.
+3. Report the current state without modifying any artifact.
+
+## Close operation
+
+### Permissions
+
+READ:
+- reviewed artifacts
+- review records
+
+WRITE:
+- review record
+
+DO NOT WRITE:
+- reviewed artifacts
+
+### Procedure
+
+1. Confirm all applicable findings have terminal outcomes and the review purpose is complete (SPEC Section 13.9).
+2. Set the record status to Closed.
+3. Record a closure date and a concise rationale for closure.
+4. Optionally add an outcome summary section (for example `## Review Outcome`).
+5. Do not close a review while actionable findings remain.
 
 ## Review rounds
 
@@ -182,26 +226,17 @@ If participants cannot reach agreement, the review owner or a designated arbiter
 
 A revoked decision may return the finding to Discussing or Open. Do not implement a revoked decision.
 
-## Discovery
-
-Before operating, identify:
-
-- the applicable review for the requested scope and purpose;
-- the current review round;
-- the assigned role and ownership boundary;
-- applicable review records, feedback threads, and reviewed artifacts.
-
 ## Handoff
 
-Update the review record before another agent operates.
+When one agent completes an operation, the review record SHOULD be updated before another agent operates.
 
-When implementing, update the finding status to In Progress or Resolved before proceeding.
+Finding status changes are recorded by the review owner. Implementing agents report progress and completion through their own feedback items (Section 8.5); they do not write the review record. The review owner SHOULD record implementer-reported status changes promptly.
 
 When verifying, read the current finding status and decision before verifying.
 
 When providing feedback, append your items and confirm the thread is current before another agent operates.
 
-Document state transitions in the review record.
+State transitions SHOULD be documented by the review owner in the review record.
 
 ## Quality rules
 
