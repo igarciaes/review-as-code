@@ -1,5 +1,11 @@
 # Changelog
 
+## [v0.2.1] - 2026-09-12
+
+### Added
+
+- `.review/` review layout with R001 specification and implementation review (12 findings, all Open).
+
 ## [v0.2.0] - 2026-09-12
 
 ### Added

@@ -2,7 +2,7 @@
 
 ## Version
 
-**RaC v0.2.0**
+**RaC v0.2.1**
 
 ## 1. Purpose
 
