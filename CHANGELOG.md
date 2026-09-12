@@ -1,5 +1,14 @@
 # Changelog
 
+## [v0.3.1] - 2026-09-12
+
+### Changed
+
+- Close review R001: all 12 findings (R001-F001 through R001-F012) independently verified against their acceptance criteria and marked Verified with reproducible evidence (section references, commit hashes, and schema validation).
+- Record closure in the R001 review record per §13.9: status `Closed`, closure date, closure rationale, and Review Outcome summary.
+- Move R001 from active to closed reviews in `.review/README.md`.
+- Sync version references to RaC v0.3.1 across `SPEC.md`, `README.md`, `SKILL.md`, and `AGENTS.md`.
+
 ## [v0.3.0] - 2026-09-12
 
 ### Changed

@@ -2,7 +2,7 @@
 
 ## Version
 
-**RaC v0.3.0**
+**RaC v0.3.1**
 
 ## 1. Purpose
 
@@ -810,7 +810,7 @@ Fields that appear in the Markdown but have no schema property (for example `**R
 
 ## 19. Conformance
 
-A RaC implementation conforms to v0.3.0 when it:
+A RaC implementation conforms to v0.3.1 when it:
 
 1. supports multiple review records;
 2. provides stable review and finding IDs;

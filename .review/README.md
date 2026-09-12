@@ -24,8 +24,8 @@ Critical, High, Medium, Low, Informational.
 
 ## Active reviews
 
-- R001 — Specification and implementation review
+None.
 
 ## Closed reviews
 
-None.
+- R001 — Specification and implementation review (closed 2026-09-12)
