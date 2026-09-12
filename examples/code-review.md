@@ -24,6 +24,8 @@ Configure an explicit timeout.
 
 **Decision:** Accepted
 
+Feedback for this finding: [R042-F001 feedback thread](../feedback/R042-F001.md).
+
 **Acceptance**
 
 - [x] A timeout is configured.

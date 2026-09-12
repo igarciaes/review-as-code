@@ -1,5 +1,21 @@
 # Changelog
 
+## [v0.2.0] - 2026-09-12
+
+### Added
+
+- Git-managed feedback loop between reviewers and implementers.
+- `SPEC.md` version bumped to RaC v0.2.0.
+- New `Review feedback` section (8.5): feedback threads, append-only feedback items with stable IDs (`R###-F###-FB###`), and author ownership of feedback items.
+- Feedback layout under `.review/feedback/` in the repository model.
+- Feedback permissions for reviewer, implementer, and verifier roles.
+- Feedback exchange step in the workflow and feedback loop in the workflow model.
+- Agent rule against modifying another party's feedback items.
+- Conformance requirement for git-managed feedback records.
+- `SKILL.md` Feedback operation with permissions and procedure.
+- Optional `schemas/feedback.schema.json` for feedback thread validation.
+- `examples/feedback-loop.md` reference thread.
+
 ## [v0.1.2] - 2026-09-06
 
 ### Changed

@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Review as Code Feedback Thread",
+  "type": "object",
+  "description": "Optional machine-readable projection of a RaC feedback thread. Markdown remains the canonical human-readable format.",
+  "required": [
+    "review_id",
+    "finding_id",
+    "items"
+  ],
+  "properties": {
+    "review_id": {
+      "type": "string",
+      "pattern": "^R[0-9]+$"
+    },
+    "finding_id": {
+      "type": "string",
+      "pattern": "^R[0-9]+-F[0-9]+$"
+    },
+    "items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "author_role",
+          "date",
+          "content"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^R[0-9]+-F[0-9]+-FB[0-9]+$"
+          },
+          "author_role": {
+            "type": "string",
+            "enum": [
+              "Reviewer",
+              "Implementer",
+              "Verifier"
+            ]
+          },
+          "date": {
+            "type": "string",
+            "format": "date"
+          },
+          "content": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "minItems": 1
+    }
+  }
+}

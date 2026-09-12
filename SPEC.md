@@ -2,7 +2,7 @@
 
 ## Version
 
-**RaC v0.1**
+**RaC v0.2.0**
 
 ## 1. Purpose
 
@@ -17,7 +17,8 @@ The goals of RaC are to:
 - support multiple rounds within a review;
 - remain easy for humans to read and edit;
 - provide explicit semantics for AI agents;
-- separate review, discussion, implementation, and verification.
+- separate review, discussion, implementation, and verification;
+- support git-managed feedback between reviewers and implementers.
 
 ## 2. Normative language
 
@@ -41,6 +42,8 @@ A reviewer MUST NOT modify artifacts under review while acting as reviewer.
 
 An implementer MUST NOT modify reviewer-owned review records while acting as implementer.
 
+Feedback items are owned by their author. A reviewer MUST NOT modify implementer-authored feedback items, and an implementer MUST NOT modify reviewer-authored feedback items. See Section 8.5.
+
 ### 3.4 Discussion is separate
 
 The review record MUST NOT be used as a conversation transcript.
@@ -48,6 +51,8 @@ The review record MUST NOT be used as a conversation transcript.
 Discussion MAY occur in pull requests, issues, chat, meetings, or other systems.
 
 The review record SHOULD capture the resulting decision and rationale concisely.
+
+Structured feedback records (Section 8.5) are distinct from conversation chatter. Feedback records are durable, git-managed, decision-relevant exchanges between reviewers and implementers and are stored outside the review record. Conversational discussion that is not decision-relevant remains external to the repository.
 
 ### 3.5 Explicit decisions
 
@@ -129,6 +134,22 @@ All other states (Open, Discussing, Accepted, Accepted Alternative, In Progress,
 
 The code, documents, specifications, or other artifacts being assessed.
 
+### Feedback record
+
+A single git-managed, append-only message in which a reviewer or implementer exchanges substantive clarification, questions, responses, or confirmation about a finding.
+
+### Feedback item
+
+A feedback record within a feedback thread. Each feedback item has a stable identifier within its thread.
+
+### Feedback thread
+
+The ordered set of feedback items associated with a single finding. A thread spans review rounds.
+
+### Feedback author
+
+The person or agent who wrote a feedback item. The author owns their own feedback items.
+
 ## 5. Repository model
 
 A repository MAY contain many reviews.
@@ -138,10 +159,13 @@ The default layout is:
 ```text
 .review/
 ├── README.md
-└── reviews/
-    ├── R001.md
-    ├── R002.md
-    └── R003.md
+├── reviews/
+│   ├── R001.md
+│   ├── R002.md
+│   └── R003.md
+└── feedback/
+    ├── R001-F001.md
+    └── R003-F002.md
 ```
 
 Repositories MAY define another layout in `.review/README.md`.
@@ -155,8 +179,10 @@ A single global review file SHOULD NOT be used to represent multiple unrelated r
 It SHOULD document:
 
 - the review layout and the paths of review records;
+- the feedback layout and the paths of feedback threads;
 - the review ID convention (for example `R###`);
 - the finding ID convention (for example `R###-F###`);
+- the feedback item ID convention (for example `R###-F###-FB###`);
 - how rounds are represented;
 - the controlled status vocabulary when a subset is used;
 - the severity vocabulary when a subset is used;
@@ -179,6 +205,10 @@ Each review is a single Markdown file under `reviews/`.
 - IDs follow `R###` (for example `R042`).
 - Findings follow `R###-F###` (for example `R042-F001`).
 - Rounds are represented as sections within the review file.
+
+Feedback threads are stored under `feedback/`.
+- Thread filenames follow `R###-F###` (for example `R042-F001.md`).
+- Feedback items follow `R###-F###-FB###` (for example `R042-F001-FB001`).
 
 ## Status
 
@@ -297,6 +327,73 @@ Configure an explicit timeout.
 - [ ] Timeout behavior is tested.
 ```
 
+### 8.5 Review feedback
+
+The feedback loop allows reviewers and implementers to exchange substantive clarification, questions, responses, and confirmation through git-managed feedback records.
+
+A feedback thread MUST be stored outside the review record, in the repository's feedback layout (Section 5).
+
+A feedback thread is associated with exactly one finding and MUST use a stable identifier derived from the finding.
+
+Recommended thread filename format:
+
+```text
+.review/feedback/R042-F001.md
+```
+
+Each feedback item in a thread MUST have a stable identifier within the thread.
+
+Recommended feedback item ID format:
+
+```text
+R042-F001-FB001
+R042-F001-FB002
+```
+
+Feedback items MUST be append-only. New items MUST receive new stable IDs. Previously recorded items MUST retain their original IDs and content.
+
+A feedback item SHOULD contain:
+
+- ID;
+- author role;
+- date;
+- content.
+
+Example:
+
+```markdown
+# R042-F001 — Feedback thread
+
+**Finding:** [R042-F001](../reviews/R042.md) — Missing request timeout
+
+## FB001 — Clarification
+
+**Author:** Reviewer
+**Date:** 2026-09-07
+
+Does the shared HTTP client already expose a timeout option, or must we add one?
+
+## FB002 — Response
+
+**Author:** Implementer
+**Date:** 2026-09-07
+
+The shared client exposes `timeoutMs`; we can set it at the call site.
+
+## FB003 — Confirmation
+
+**Author:** Reviewer
+**Date:** 2026-09-07
+
+Setting it at the call site satisfies the recommendation.
+```
+
+Feedback items are owned by their author. A reviewer MUST NOT modify implementer-authored feedback items, and an implementer MUST NOT modify reviewer-authored feedback items (Section 3.3).
+
+Feedback feeds decisions but is not itself a decision. A decision MUST be recorded in the review record by the review owner (Section 11). Feedback does not replace external discussion for agreement (Section 3.4).
+
+If participants cannot reach agreement through feedback, the review owner or a designated arbiter MAY record a decision with a rationale that includes a summary of the exchange (Section 13.10).
+
 ## 9. Severity
 
 Recommended severity values are:
@@ -404,7 +501,9 @@ When acting as reviewer:
 
 - READ reviewed artifacts;
 - WRITE review artifacts;
-- MUST NOT modify reviewed artifacts.
+- WRITE feedback items authored by the reviewer;
+- MUST NOT modify reviewed artifacts;
+- MUST NOT modify feedback items authored by another party.
 
 ### Implementer
 
@@ -412,7 +511,9 @@ When acting as implementer:
 
 - READ reviewed artifacts and applicable review artifacts;
 - WRITE reviewed artifacts;
-- MUST NOT modify reviewer-owned review artifacts.
+- WRITE feedback items authored by the implementer;
+- MUST NOT modify reviewer-owned review artifacts;
+- MUST NOT modify feedback items authored by another party.
 
 ### Verifier
 
@@ -420,7 +521,9 @@ When acting as verifier:
 
 - READ reviewed artifacts and review artifacts;
 - WRITE verification results to review artifacts;
-- MUST NOT modify reviewed artifacts merely to make verification pass.
+- WRITE feedback items authored by the verifier;
+- MUST NOT modify reviewed artifacts merely to make verification pass;
+- MUST NOT modify feedback items authored by another party.
 
 The same person or agent MAY perform different roles at different times, but MUST respect the boundaries of the current operation.
 
@@ -440,37 +543,45 @@ The reviewer inspects the reviewed artifacts and records findings.
 
 Participants discuss findings outside the review artifact when agreement is required.
 
-### 13.4 Decision
+### 13.4 Feedback exchange
+
+Reviewers and implementers MAY exchange substantive clarification, questions, responses, and confirmation through feedback records (Section 8.5).
+
+Feedback items are appended to the finding's feedback thread. Each item is owned by its author.
+
+Feedback does not replace the decision. The resulting decision is still recorded in the review artifact by the review owner.
+
+### 13.5 Decision
 
 The resulting decision is recorded in the review artifact by the reviewer or another explicitly authorized review owner.
 
-### 13.5 Implementation
+### 13.6 Implementation
 
 The author or implementer reads accepted decisions and modifies the reviewed artifacts.
 
 The implementer MUST NOT silently reinterpret an unaccepted finding as accepted.
 
-### 13.6 Verification
+### 13.7 Verification
 
 The reviewer independently inspects the resulting artifacts and records verification evidence.
 
-### 13.7 Additional rounds
+### 13.8 Additional rounds
 
 If further work is required, the review continues with another round.
 
-### 13.8 Closure
+### 13.9 Closure
 
 The reviewer MAY close the review when all applicable findings have terminal outcomes and the review purpose is complete.
 
 Terminal outcomes are defined in Section 4 and include: Verified, Rejected, Accepted Risk, Deferred, Not Applicable, and Stale.
 
-### 13.9 Conflict resolution
+### 13.10 Conflict resolution
 
 If participants cannot reach agreement on a finding, the review owner or a designated arbiter MAY record a decision with a rationale that includes a summary of the disagreement.
 
 The finding progresses once an authorized decision is recorded, regardless of ongoing disagreement.
 
-### 13.10 Decision revocation
+### 13.11 Decision revocation
 
 An accepted finding MAY be reopened if new information makes the decision infeasible.
 
@@ -480,7 +591,7 @@ The finding returns to Discussing or Open with a note referencing the revoked de
 
 Implementation MUST NOT proceed on revoked decisions.
 
-### 13.11 Reviewer handoff
+### 13.12 Reviewer handoff
 
 A review MAY be transferred to a new reviewer.
 
@@ -503,7 +614,7 @@ Review round
 Findings
         |
         v
-External discussion
+External discussion  <-->  Feedback loop (clarify / respond / confirm)
         |
         v
 Decision recorded
@@ -583,7 +694,8 @@ Agents MUST NOT:
 - modify reviewer-owned records while acting as implementer;
 - modify reviewed artifacts while acting as reviewer;
 - claim verification without evidence;
-- silently close a review.
+- silently close a review;
+- modify feedback items authored by another party (Section 8.5).
 
 ### 17.1 Discovery
 
@@ -613,7 +725,7 @@ Machine-readable representations MAY be generated for validation or automation b
 
 ## 19. Conformance
 
-A RaC implementation conforms to v0.1 when it:
+A RaC implementation conforms to v0.2.0 when it:
 
 1. supports multiple review records;
 2. provides stable review and finding IDs;
@@ -622,7 +734,8 @@ A RaC implementation conforms to v0.1 when it:
 5. separates discussion from the review record;
 6. distinguishes recommendations from decisions;
 7. distinguishes implementation from verification;
-8. provides a human-readable review representation.
+8. provides a human-readable review representation;
+9. supports git-managed feedback records between reviewers and implementers.
 
 ## 20. Fundamental invariant
 

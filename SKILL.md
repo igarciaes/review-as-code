@@ -1,10 +1,10 @@
 ---
 name: review-as-code
-description: Use to perform Review as Code (RaC) operations — review, implement, verify, inspect, and close — for code, documentation, specifications, and other reviewable artifacts. Follow SPEC.md when present; the specification is authoritative over this skill.
+description: Use to perform Review as Code (RaC) operations — review, implement, verify, inspect, close, and provide feedback — for code, documentation, specifications, and other reviewable artifacts. Follow SPEC.md when present; the specification is authoritative over this skill.
 license: MIT
 metadata:
   author: igarciaes
-  version: 0.1.1
+  version: 0.2.0
 ---
 
 # Review as Code Skill
@@ -30,7 +30,8 @@ Default layout:
 ```text
 .review/
 ├── README.md
-└── reviews/
+├── reviews/
+└── feedback/
 ```
 
 ## Operations
@@ -42,6 +43,7 @@ Determine the current operation:
 - Verify
 - Inspect
 - Close
+- Feedback
 
 Do not combine operations when doing so violates ownership boundaries.
 
@@ -118,6 +120,33 @@ DO NOT WRITE:
 6. Mark Verified only when criteria are satisfied.
 7. If work remains, keep the review open and continue with another round as appropriate.
 
+## Feedback operation
+
+### Permissions
+
+READ:
+- reviewed artifacts
+- applicable review records
+- applicable feedback threads
+
+WRITE:
+- feedback items authored by the acting agent
+
+DO NOT WRITE:
+- feedback items authored by another party
+- review records or reviewed artifacts (unless another permitted operation applies)
+
+### Procedure
+
+1. Identify the finding that requires clarification or response.
+2. Locate its feedback thread in the repository feedback layout (for example `.review/feedback/R042-F001.md`).
+3. Read the thread history and the finding's current status and decision.
+4. Append a new feedback item with a new stable ID (for example `R042-F001-FB003`).
+5. Record the author role and date.
+6. Keep the item substantive and decision-relevant; do not reproduce conversational chatter.
+7. Do not change the finding status or decision. Decisions are recorded in the review record by the review owner.
+8. Do not edit or renumber existing feedback items.
+
 ## Review rounds
 
 A review MAY contain multiple rounds.
@@ -136,6 +165,8 @@ Create a new review for a genuinely new purpose or scope.
 ## Decisions and disagreement
 
 Discussion belongs outside the review record.
+
+Structured clarification MAY be exchanged through git-managed feedback threads. Append your own items; never edit another party's feedback.
 
 Record concise outcomes, not conversation transcripts.
 
@@ -158,7 +189,7 @@ Before operating, identify:
 - the applicable review for the requested scope and purpose;
 - the current review round;
 - the assigned role and ownership boundary;
-- applicable review records and reviewed artifacts.
+- applicable review records, feedback threads, and reviewed artifacts.
 
 ## Handoff
 
@@ -167,6 +198,8 @@ Update the review record before another agent operates.
 When implementing, update the finding status to In Progress or Resolved before proceeding.
 
 When verifying, read the current finding status and decision before verifying.
+
+When providing feedback, append your items and confirm the thread is current before another agent operates.
 
 Document state transitions in the review record.
 
