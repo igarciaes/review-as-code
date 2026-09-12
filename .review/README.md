@@ -7,6 +7,7 @@ Reviews are stored under `reviews/` in this repository.
 Each review is a single Markdown file under `reviews/`.
 
 - Review IDs follow `R###` (for example `R001`).
+- Review IDs are allocated by scanning `reviews/` for existing records and taking the next sequential unused number.
 - Finding IDs follow `R###-F###` (for example `R001-F001`).
 - Feedback threads are stored under `feedback/`.
 - Feedback thread filenames follow `R###-F###` (for example `R001-F001.md`).

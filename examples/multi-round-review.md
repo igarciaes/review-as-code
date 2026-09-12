@@ -6,7 +6,7 @@
 **Reviewer:** Example Reviewer
 **Created:** 2026-09-06
 **Current Round:** 3
-**RaC version:** v0.2.3
+**RaC version:** v0.3.0
 
 ## Review Rounds
 

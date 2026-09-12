@@ -4,7 +4,7 @@ description: Use to perform Review as Code (RaC) operations — review, implemen
 license: MIT
 metadata:
   author: igarciaes
-  version: 0.2.3
+  version: 0.3.0
 ---
 
 # Review as Code Skill

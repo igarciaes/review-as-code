@@ -2,7 +2,7 @@
 
 ## Version
 
-**RaC v0.2.3**
+**RaC v0.3.0**
 
 ## 1. Purpose
 
@@ -257,7 +257,7 @@ Example:
 **Scope:** `src/payment/`
 **Reviewer:** Alice
 **Created:** 2026-09-06
-**RaC version:** v0.2.3
+**RaC version:** v0.3.0
 
 ## Findings
 ```
@@ -810,7 +810,7 @@ Fields that appear in the Markdown but have no schema property (for example `**R
 
 ## 19. Conformance
 
-A RaC implementation conforms to v0.2.3 when it:
+A RaC implementation conforms to v0.3.0 when it:
 
 1. supports multiple review records;
 2. provides stable review and finding IDs;

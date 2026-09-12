@@ -1,5 +1,22 @@
 # Changelog
 
+## [v0.3.0] - 2026-09-12
+
+### Changed
+
+- Define the review status vocabulary (`Open | Closed`) in `SPEC.md` §6 and specify closure representation (status `Closed`, closure date, rationale, optional `Review Outcome` section) in §13.9.
+- Rewrite the §17.2 handoff rule: the review owner records finding status changes; the implementer reports progress and completion through its own feedback items.
+- Add a default finding status-transition table in §10, including Stale reopening semantics and the link between feedback activity and the Discussing state.
+- Add SHOULD-level guidance for reproducible verification evidence (§8) and changeset-anchored scope (§4).
+- Add review ID allocation guidance (§5).
+- Normatize feedback item kinds (Clarification, Response, Report, Confirmation), an optional author identity field, and the Verifier as a feedback participant in §8.5.
+- Add the Markdown-to-schema projection mapping in §18.1.
+- Reconcile `schemas/review.schema.json` and `schemas/feedback.schema.json` with the revised rules, including `$id` declarations, a consistent `additionalProperties` policy, optional `rac_version`/`closed_date`/`outcome` fields, and open role/decision/kind vocabularies.
+- Merge the duplicated discovery sections in `SKILL.md` and add permissions and procedures for the Inspect and Close operations.
+- Correct example records to match the status and closure conventions (`R042-F002`, `R017-F001`, `R055`) and fix the broken feedback-thread link in `examples/code-review.md`.
+- Add `CHANGELOG.md` and `LICENSE` to the README artifact list.
+- Sync version references to RaC v0.3.0 across `SPEC.md`, `README.md`, `SKILL.md`, and `AGENTS.md`.
+
 ## [v0.2.3] - 2026-09-12
 
 ### Added

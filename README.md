@@ -18,12 +18,14 @@ A review may contain multiple review rounds before it is closed.
 
 ## Repository contents
 
-- `SPEC.md` — normative RaC v0.2.3 specification
+- `SPEC.md` — normative RaC v0.3.0 specification
 - `AGENTS.md` — instructions for agents working in this repository
 - `SKILL.md` — portable RaC agent skill
 - `examples/` — reference review records
 - `schemas/review.schema.json` — optional validation schema for review records
 - `schemas/feedback.schema.json` — optional validation schema for feedback threads
+- `CHANGELOG.md` — release history (Keep a Changelog)
+- `LICENSE` — MIT © 2026 igarciaes and contributors
 
 ## Quick workflow
 

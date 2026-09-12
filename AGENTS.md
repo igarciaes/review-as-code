@@ -6,7 +6,7 @@ This repository defines the Review as Code (RaC) specification and reference art
 
 | Path | Role |
 |------|------|
-| `SPEC.md` | Normative RaC v0.2.0 protocol |
+| `SPEC.md` | Normative RaC v0.3.0 protocol |
 | `SKILL.md` | Portable agent skill; conformant with the Agent Skills spec |
 | `AGENTS.md` | Repository instructions (this file) |
 | `examples/` | Non-normative reference review records |
@@ -17,7 +17,7 @@ This repository defines the Review as Code (RaC) specification and reference art
 
 ## Source of truth
 
-`SPEC.md` is the normative source for RaC v0.2.0. When any other artifact conflicts with it, `SPEC.md` wins. Examples, the skill, and the schema are derived and must stay consistent.
+`SPEC.md` is the normative source for RaC v0.3.0. When any other artifact conflicts with it, `SPEC.md` wins. Examples, the skill, and the schema are derived and must stay consistent.
 
 ## Working in this repository
 
@@ -33,7 +33,7 @@ This repository has no build step or automated test suite. Validation is manual:
 - confirm `SPEC.md` is coherent and uses normative language;
 - ensure `SKILL.md` stays aligned with `SPEC.md` and conformant with the Agent Skills spec (https://agentskills.io/specification), including valid `name`, `description`, and optional `license`/`metadata` frontmatter;
 - keep examples consistent with normative format or workflow changes;
-- validate examples against `schemas/review.schema.json` when applicable.
+- validate examples against `schemas/review.schema.json` and `schemas/feedback.schema.json` when applicable, using the Markdown-to-schema projection defined in `SPEC.md` §18.1.
 
 ## Adopting RaC
 
