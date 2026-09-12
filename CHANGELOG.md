@@ -1,5 +1,12 @@
 # Changelog
 
+## [v0.2.2] - 2026-09-12
+
+### Added
+
+- Implementer feedback threads for R001 findings (12 threads under `.review/feedback/`).
+- Version references synced to RaC v0.2.2 across `SPEC.md`, `README.md`, and `SKILL.md`.
+
 ## [v0.2.1] - 2026-09-12
 
 ### Added

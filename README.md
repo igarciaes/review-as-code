@@ -18,7 +18,7 @@ A review may contain multiple review rounds before it is closed.
 
 ## Repository contents
 
-- `SPEC.md` — normative RaC v0.2.0 specification
+- `SPEC.md` — normative RaC v0.2.2 specification
 - `AGENTS.md` — instructions for agents working in this repository
 - `SKILL.md` — portable RaC agent skill
 - `examples/` — reference review records
