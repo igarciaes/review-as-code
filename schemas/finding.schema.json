@@ -1,0 +1,77 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://review-as-code.dev/schemas/finding.schema.json",
+  "title": "Review as Code Finding",
+  "type": "object",
+  "description": "Optional machine-readable projection of a RaC finding file, derived per SPEC Section 15.1. Markdown remains the canonical human-readable format. Additional properties are permitted so repositories MAY extend the record.",
+  "required": [
+    "id",
+    "title",
+    "status"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "The finding's local ID, e.g. F001. The canonical globally unique ID R###-F### is derived from the review directory and this value (SPEC Section 7).",
+      "pattern": "^F[0-9]+$"
+    },
+    "title": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "open",
+        "closed"
+      ]
+    },
+    "severity": {
+      "type": "string",
+      "enum": [
+        "critical",
+        "high",
+        "medium",
+        "low",
+        "informational"
+      ]
+    },
+    "location": {
+      "type": "string"
+    },
+    "observation": {
+      "type": "string"
+    },
+    "recommendation": {
+      "type": "string"
+    },
+    "decision": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "accepted",
+        "alternative",
+        "rejected",
+        "accepted_risk",
+        "deferred",
+        "not_applicable"
+      ],
+      "description": "Recommended values from SPEC Section 8.1. Repositories MAY use other values."
+    },
+    "decision_rationale": {
+      "type": "string"
+    },
+    "verification": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "verified",
+        "failed",
+        "not_required"
+      ],
+      "description": "Recommended values from SPEC Section 8.2. Repositories MAY use other values."
+    },
+    "evidence": {
+      "type": "string"
+    }
+  }
+}

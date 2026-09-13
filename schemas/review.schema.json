@@ -1,15 +1,14 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://review-as-code.dev/schemas/review.schema.json",
-  "title": "Review as Code Review Record",
+  "title": "Review as Code Review Metadata",
   "type": "object",
-  "description": "Optional machine-readable projection of a RaC review, derived per SPEC Section 18.1. Markdown remains the canonical human-readable format. Additional properties are permitted at the record level so repositories MAY extend records.",
+  "description": "Optional machine-readable projection of a RaC review metadata file, derived per SPEC Section 15.1. Markdown remains the canonical human-readable format. Additional properties are permitted so repositories MAY extend the record.",
   "required": [
     "id",
     "title",
     "status",
-    "scope",
-    "findings"
+    "scope"
   ],
   "properties": {
     "id": {
@@ -24,18 +23,18 @@
     },
     "status": {
       "type": "string",
-      "description": "Review status. Recommended values: Open, Closed.",
       "enum": [
-        "Open",
-        "Closed"
-      ]
+        "open",
+        "closed"
+      ],
+      "description": "Summary metadata only. MUST NOT be used to track individual finding workflow (SPEC Section 6)."
     },
     "scope": {
       "type": "string"
     },
-    "current_round": {
-      "type": "integer",
-      "minimum": 1
+    "base": {
+      "type": "string",
+      "description": "Optional base reference, for example a commit or pull-request reference (SPEC Section 4)."
     },
     "rac_version": {
       "type": "string",
@@ -44,85 +43,11 @@
     "closed_date": {
       "type": "string",
       "format": "date",
-      "description": "The date the review was closed, projected from the closure record (SPEC Section 13.9)."
+      "description": "The date the review was closed."
     },
     "outcome": {
       "type": "string",
-      "description": "Optional outcome summary projected from the Review Outcome section (SPEC Section 13.9)."
-    },
-    "findings": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "required": [
-          "id",
-          "title",
-          "status"
-        ],
-        "additionalProperties": false,
-        "properties": {
-          "id": {
-            "type": "string",
-            "pattern": "^R[0-9]+-F[0-9]+$"
-          },
-          "title": {
-            "type": "string"
-          },
-          "round": {
-            "type": "integer",
-            "minimum": 1
-          },
-          "severity": {
-            "type": "string",
-            "enum": [
-              "Critical",
-              "High",
-              "Medium",
-              "Low",
-              "Informational"
-            ]
-          },
-          "status": {
-            "type": "string",
-            "enum": [
-              "Open",
-              "Discussing",
-              "Accepted",
-              "Accepted Alternative",
-              "Rejected",
-              "Accepted Risk",
-              "Deferred",
-              "In Progress",
-              "Resolved",
-              "Verified",
-              "Not Applicable",
-              "Stale"
-            ]
-          },
-          "location": {
-            "type": "string"
-          },
-          "description": {
-            "type": "string"
-          },
-          "recommendation": {
-            "type": "string"
-          },
-          "decision": {
-            "type": "string",
-            "description": "The agreed outcome for the finding. Recommended values from SPEC Section 10: Accepted, Accepted Alternative, Rejected, Accepted Risk, Deferred, Not Applicable, Stale. Repositories MAY use other values."
-          },
-          "acceptance": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "verification": {
-            "type": "string"
-          }
-        }
-      }
+      "description": "Optional outcome summary."
     }
   }
 }
