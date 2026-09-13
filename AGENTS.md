@@ -6,18 +6,18 @@ This repository defines the Review as Code (RaC) specification and reference art
 
 | Path | Role |
 |------|------|
-| `SPEC.md` | Normative RaC v0.3.1 protocol |
+| `SPEC.md` | Normative RaC v0.4.0 protocol |
 | `SKILL.md` | Portable agent skill; conformant with the Agent Skills spec |
 | `AGENTS.md` | Repository instructions (this file) |
 | `examples/` | Non-normative reference review records |
-| `schemas/review.schema.json` | Optional validation support |
-| `schemas/feedback.schema.json` | Optional validation support for feedback threads |
+| `schemas/review.schema.json` | Optional validation support for review metadata |
+| `schemas/finding.schema.json` | Optional validation support for finding files |
 | `CHANGELOG.md` | Release history (Keep a Changelog) |
 | `LICENSE` | MIT — © 2026 igarciaes and contributors |
 
 ## Source of truth
 
-`SPEC.md` is the normative source for RaC v0.3.1. When any other artifact conflicts with it, `SPEC.md` wins. Examples, the skill, and the schema are derived and must stay consistent.
+`SPEC.md` is the normative source for RaC v0.4.0. When any other artifact conflicts with it, `SPEC.md` wins. Examples, the skill, and the schemas are derived and must stay consistent.
 
 ## Working in this repository
 
@@ -33,11 +33,11 @@ This repository has no build step or automated test suite. Validation is manual:
 - confirm `SPEC.md` is coherent and uses normative language;
 - ensure `SKILL.md` stays aligned with `SPEC.md` and conformant with the Agent Skills spec (https://agentskills.io/specification), including valid `name`, `description`, and optional `license`/`metadata` frontmatter;
 - keep examples consistent with normative format or workflow changes;
-- validate examples against `schemas/review.schema.json` and `schemas/feedback.schema.json` when applicable, using the Markdown-to-schema projection defined in `SPEC.md` §18.1.
+- validate examples against `schemas/review.schema.json` and `schemas/finding.schema.json` when applicable, using the Markdown-to-schema projection defined in `SPEC.md` §15.1.
 
 ## Adopting RaC
 
-When a repository uses Review as Code, read its `.review/README.md` when present for the review layout, ID formats, controlled vocabulary, and active reviews before operating.
+When a repository uses Review as Code, read its `.review/README.md` when present for the review layout, ID formats, controlled vocabulary, and active reviews before operating. Findings live as independent files under each review's `findings/` directory.
 
 ## Change discipline
 

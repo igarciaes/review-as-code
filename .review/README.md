@@ -4,28 +4,28 @@ Reviews are stored under `reviews/` in this repository.
 
 ## Layout
 
-Each review is a single Markdown file under `reviews/`.
+Each review is a directory under `reviews/` containing a `review.md` metadata file and a `findings/` directory with one Markdown file per finding.
 
 - Review IDs follow `R###` (for example `R001`).
 - Review IDs are allocated by scanning `reviews/` for existing records and taking the next sequential unused number.
-- Finding IDs follow `R###-F###` (for example `R001-F001`).
-- Feedback threads are stored under `feedback/`.
-- Feedback thread filenames follow `R###-F###` (for example `R001-F001.md`).
-- Feedback item IDs follow `R###-F###-FB###` (for example `R001-F001-FB001`).
-- Rounds are represented as sections within the review file.
+- Finding IDs follow `F###` (for example `F001`).
+- Finding IDs are allocated by scanning the review's `findings/` for existing records and taking the next sequential unused number.
+- The canonical, globally unique finding ID is `R###-F###`, derived from the review directory and the finding filename.
 
-## Status
+## Vocabulary
 
-This repository uses the full RaC vocabulary from `SPEC.md`.
+- Finding status: `open`, `closed`.
+- Decision: `pending`, `accepted`, `alternative`, `rejected`, `accepted_risk`, `deferred`, `not_applicable`.
+- Verification: `pending`, `verified`, `failed`, `not_required`.
 
 ## Severity
 
-Critical, High, Medium, Low, Informational.
+critical, high, medium, low, informational.
+
+## Legacy records
+
+R001 and its feedback threads under `feedback/` predate this layout and remain as legacy v0.3.x history. New reviews follow the layout above.
 
 ## Active reviews
 
 None.
-
-## Closed reviews
-
-- R001 — Specification and implementation review (closed 2026-09-12)
