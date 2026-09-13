@@ -1,5 +1,34 @@
 # Changelog
 
+## [v0.4.0] - 2026-09-13
+
+### Added
+
+- One-finding-per-file layout: each finding is an independent, independently writable file under a review's `findings/` directory.
+- `schemas/finding.schema.json` for optional finding-file validation.
+- Section-level ownership: the reviewer owns the observation, the artifact owner owns the decision, and the verifier owns verification.
+- Finding lifecycle with only `open | closed` status, separate decision and verification vocabularies, and no transition matrix.
+- Outstanding-finding rule: a finding is outstanding when `open`; a review has no outstanding findings when all its findings are `closed`.
+- Merge-conflict design rules: creation never modifies existing findings, no global indexes, and shared mutable files minimized.
+- Progressive agent loading guidance: load only the artifacts required for the requested operation.
+- Lowercase status, decision, verification, and severity vocabularies.
+
+### Changed
+
+- `SPEC.md` rewritten around the simplified model: review metadata is a small `review.md`; the review base reference replaces round tracking; Git history is the timeline.
+- `SKILL.md` reduced to a minimal discovery, roles, findings, operations, and outstanding-findings workflow.
+- `examples/` restructured into per-review directories (`examples/R042/review.md` with `findings/F###.md`), covering open, accepted-and-verified, rejected, accepted-risk, and no-outstanding-findings scenarios.
+- `schemas/review.schema.json` simplified to validate review metadata only.
+- `README.md`, `AGENTS.md`, and `.review/README.md` synced to the simplified model; `.review/` documents R001 as a legacy record.
+
+### Removed
+
+- Review rounds as a required protocol concept, including `current_round`.
+- The finding state machine and the legal-transition matrix.
+- The multi-state finding vocabulary (Discussing, Accepted Alternative, In Progress, Resolved, Verified, Stale, etc.).
+- Git-managed feedback threads as a required RaC primitive, `schemas/feedback.schema.json`, and the `examples/feedback-loop.md` reference.
+- The requirement to maintain manually synchronized Markdown and JSON representations.
+
 ## [v0.3.1] - 2026-09-12
 
 ### Changed
