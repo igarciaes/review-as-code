@@ -1,5 +1,16 @@
 # Changelog
 
+## [v0.4.1] - 2026-09-13
+
+### Added
+
+- R002 review record under `.review/reviews/R002/` covering the v0.4.0 simplification changeset (base `4dc92f3`), with findings F001–F004 on the SPEC §7.1 example form, the undocumented severity vocabulary, the schema wording/enum contradiction, and the absent `rac_version` in examples.
+- The simplification implementation plan under `.plan/`.
+
+### Changed
+
+- Version references synced to RaC v0.4.1 across `SPEC.md`, `README.md`, `SKILL.md`, `AGENTS.md`, and `CHANGELOG.md`.
+
 ## [v0.4.0] - 2026-09-13
 
 ### Added
