@@ -1,5 +1,12 @@
 # Changelog
 
+## [v0.5.2] - 2026-09-14
+
+### Changed
+
+- P001 plan record updated with verification evidence: tasks P001-T001 through P001-T007 independently verified at the artifact level; finding P001-T007-F004 (plan record fails the PaC protocol validator) accepted via decision P001-D004.
+- Version references synced to RaC v0.5.2 across `SPEC.md`, `README.md`, `SKILL.md`, `AGENTS.md`, and `CHANGELOG.md`.
+
 ## [v0.5.1] - 2026-09-14
 
 ### Changed
