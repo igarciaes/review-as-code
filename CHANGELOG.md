@@ -1,5 +1,12 @@
 # Changelog
 
+## [v0.5.1] - 2026-09-14
+
+### Changed
+
+- P001 plan record updated with implementation evidence: tasks P001-T001 through P001-T007 marked `Implemented`, referencing commit `b4f055f`.
+- Removed the stale non-canonical draft `.plan/simplify-review-as-code-for-parallel-agents.md`.
+
 ## [v0.5.0] - 2026-09-14
 
 ### Added
