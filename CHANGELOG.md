@@ -1,5 +1,12 @@
 # Changelog
 
+## [v0.5.5] - 2026-09-14
+
+### Changed
+
+- Plan P001 closed: all tasks P001-T001 through P001-T007 `Verified`, all findings resolved, no open feedback; plan `Status` set to `Closed` via decision P001-D006.
+- Version references synced to RaC v0.5.5 across `SPEC.md`, `README.md`, `SKILL.md`, `AGENTS.md`, and `CHANGELOG.md`.
+
 ## [v0.5.4] - 2026-09-14
 
 ### Changed
