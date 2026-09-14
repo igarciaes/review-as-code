@@ -1,5 +1,12 @@
 # Changelog
 
+## [v0.4.3] - 2026-09-14
+
+### Changed
+
+- P001 plan approved for implementation: plan status set to `Active` and decision `P001-D001` recorded.
+- Version references synced to RaC v0.4.3 across `SPEC.md`, `README.md`, `SKILL.md`, `AGENTS.md`, and `CHANGELOG.md`.
+
 ## [v0.4.2] - 2026-09-14
 
 ### Added
