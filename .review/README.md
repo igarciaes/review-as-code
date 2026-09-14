@@ -14,9 +14,11 @@ Each review is a directory under `reviews/` containing a `review.md` metadata fi
 
 ## Vocabulary
 
-- Finding status: `open`, `closed`.
 - Decision: `pending`, `accepted`, `alternative`, `rejected`, `accepted_risk`, `deferred`, `not_applicable`.
+- Implementation: `pending`, `implemented`.
 - Verification: `pending`, `verified`, `failed`, `not_required`.
+
+Finding state is derived from the append-only Decision, Implementation, and Verification logs.
 
 ## Severity
 

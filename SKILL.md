@@ -4,7 +4,7 @@ description: Use to perform Review as Code (RaC) operations — review, implemen
 license: MIT
 metadata:
   author: igarciaes
-  version: 0.4.3
+  version: 0.5.0
 ---
 
 # Review as Code
@@ -35,10 +35,10 @@ Default layout:
 
 ## Roles
 
-- **Reviewer** creates observations and findings.
-- **Artifact owner** decides the disposition of findings.
-- **Implementer** changes the reviewed artifacts.
-- **Verifier** independently verifies results.
+- **Reviewer** creates observations and findings, participates in finding decisions, and verifies remediation.
+- **Author** creates the artifacts under review, decides the disposition of findings, and implements accepted findings.
+
+There is no separate `Artifact Owner` or `Verifier` role. A policy MAY require independent verification by a different reviewer.
 
 A role must not silently rewrite another role's owned content.
 
@@ -47,15 +47,34 @@ A role must not silently rewrite another role's owned content.
 - One finding per file.
 - Finding IDs are stable and independently addressable.
 - Observations must not be silently rewritten.
-- Decisions are explicit and separate from status.
-- Verification records evidence.
+- Decisions, implementation, and verification are independent dimensions recorded in append-only logs.
+- State is derived from the lifecycle logs.
+
+A finding contains:
+
+```text
+Finding
+├── State
+├── Observation
+├── Recommendation
+├── Decision Log
+├── Implementation Log
+└── Verification Log
+```
+
+## Lifecycle logs
+
+- The **Decision Log** records the disposition of a finding; the Author and the Reviewer may both contribute.
+- The **Implementation Log** records implementation work; the Author authors entries and MAY reference commits, pull requests, or changed files.
+- The **Verification Log** records verification results; the Reviewer authors entries and records evidence.
+- Log entries MUST NOT be rewritten. Append a new entry to record new information.
 
 ## Operations
 
 - **Review:** create finding files from inspected artifacts.
-- **Implement:** modify the reviewed artifacts.
-- **Decide:** update only the Decision section.
-- **Verify:** update only the Verification section.
+- **Implement:** modify the reviewed artifacts; append an Implementation Log entry and update State when authorized to record implementation evidence.
+- **Decide:** append a Decision Log entry and update State.
+- **Verify:** append a Verification Log entry with evidence and update State.
 - **Inspect:** report state without modifying anything.
 - **Close:** close findings that reached a final disposition.
 
@@ -63,14 +82,14 @@ Modify the minimum set of files. Do not update unrelated findings.
 
 ## Outstanding Findings
 
-A finding is outstanding when Status is `open`.
+A finding is outstanding when it is not closed per `SPEC.md` Section 11. In general, a finding is closed when a final decision exists and any required implementation and verification are complete.
 
 A review has no outstanding findings when all findings are closed.
 
-A review may be closed only when no outstanding findings exist. Before closing, enumerate finding files and check each Status; if any finding is open, do not close the review.
+A review may be closed only when no outstanding findings exist. Before closing, enumerate finding files and check each finding's State; if any finding is outstanding, do not close the review.
 
 ## Final Invariant
 
-> The reviewer observes. The artifact owner decides. The verifier verifies.
+> The reviewer observes and verifies. The author implements. Both record decisions.
 
 The same agent may perform different roles at different times, but must respect the boundaries of the current operation.

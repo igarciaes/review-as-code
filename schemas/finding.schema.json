@@ -3,11 +3,10 @@
   "$id": "https://review-as-code.dev/schemas/finding.schema.json",
   "title": "Review as Code Finding",
   "type": "object",
-  "description": "Optional machine-readable projection of a RaC finding file, derived per SPEC Section 15.1. Markdown remains the canonical human-readable format. Additional properties are permitted so repositories MAY extend the record.",
+  "description": "Optional machine-readable projection of a RaC finding file, derived per SPEC Section 16.1. Markdown remains the canonical human-readable format. Additional properties are permitted so repositories MAY extend the record.",
   "required": [
     "id",
-    "title",
-    "status"
+    "title"
   ],
   "properties": {
     "id": {
@@ -18,12 +17,42 @@
     "title": {
       "type": "string"
     },
-    "status": {
-      "type": "string",
-      "enum": [
-        "open",
-        "closed"
-      ]
+    "state": {
+      "type": "object",
+      "description": "The derived, materialised finding condition (SPEC Section 8.5). Lifecycle logs remain authoritative.",
+      "properties": {
+        "decision": {
+          "type": "string",
+          "enum": [
+            "pending",
+            "accepted",
+            "alternative",
+            "rejected",
+            "accepted_risk",
+            "deferred",
+            "not_applicable"
+          ],
+          "description": "Recommended values from SPEC Section 8.2. Repositories MAY use other values."
+        },
+        "implementation": {
+          "type": "string",
+          "enum": [
+            "pending",
+            "implemented"
+          ],
+          "description": "Recommended values from SPEC Section 8.3. Repositories MAY use other values."
+        },
+        "verification": {
+          "type": "string",
+          "enum": [
+            "pending",
+            "verified",
+            "failed",
+            "not_required"
+          ],
+          "description": "Recommended values from SPEC Section 8.4. Repositories MAY use other values."
+        }
+      }
     },
     "severity": {
       "type": "string",
@@ -44,34 +73,59 @@
     "recommendation": {
       "type": "string"
     },
-    "decision": {
-      "type": "string",
-      "enum": [
-        "pending",
-        "accepted",
-        "alternative",
-        "rejected",
-        "accepted_risk",
-        "deferred",
-        "not_applicable"
+    "decision_log": {
+      "type": "array",
+      "description": "Append-only Decision Log entries (SPEC Section 10.1).",
+      "items": {
+        "$ref": "#/$defs/logEntry"
+      }
+    },
+    "implementation_log": {
+      "type": "array",
+      "description": "Append-only Implementation Log entries (SPEC Section 10.2).",
+      "items": {
+        "$ref": "#/$defs/logEntry"
+      }
+    },
+    "verification_log": {
+      "type": "array",
+      "description": "Append-only Verification Log entries (SPEC Section 10.3).",
+      "items": {
+        "$ref": "#/$defs/logEntry"
+      }
+    }
+  },
+  "$defs": {
+    "logEntry": {
+      "type": "object",
+      "required": [
+        "id",
+        "value",
+        "date",
+        "actor"
       ],
-      "description": "Recommended values from SPEC Section 8.1. Repositories MAY use other values."
-    },
-    "decision_rationale": {
-      "type": "string"
-    },
-    "verification": {
-      "type": "string",
-      "enum": [
-        "pending",
-        "verified",
-        "failed",
-        "not_required"
-      ],
-      "description": "Recommended values from SPEC Section 8.2. Repositories MAY use other values."
-    },
-    "evidence": {
-      "type": "string"
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "The entry's stable local identifier, e.g. D001, I001, or V001."
+        },
+        "value": {
+          "type": "string",
+          "description": "The lifecycle value recorded by the entry, e.g. accepted, implemented, or verified."
+        },
+        "date": {
+          "type": "string",
+          "format": "date"
+        },
+        "actor": {
+          "type": "string",
+          "description": "The role or identity of the entry author."
+        },
+        "content": {
+          "type": "string",
+          "description": "Decision-relevant information, not discussion transcripts."
+        }
+      }
     }
   }
 }

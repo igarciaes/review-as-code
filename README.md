@@ -6,19 +6,19 @@ RaC supports reviews of code, documentation, specifications, requirements, archi
 
 ## Core idea
 
-Each finding is an independent, independently writable artifact:
+Each finding is an independent, independently writable artifact with two roles and three independent lifecycle dimensions:
 
-- **Reviewer owns observations.**
-- **Artifact owner owns decisions.**
-- **Verifier owns verification.**
+- **Two roles: `Author` and `Reviewer`.** The Author creates the artifacts under review and implements accepted findings; the Reviewer creates findings, participates in decisions, and verifies remediation.
+- **Three dimensions: Decision, Implementation, and Verification.** They progress independently through append-only logs.
+- **State is derived.** A finding's current Decision, Implementation, and Verification values are materialised from its lifecycle logs; the logs remain authoritative.
 - **Discussion happens externally; records capture decisions and verification results, not transcripts.**
-- **Findings have exactly two statuses: `open` and `closed`.**
+- **No single-status workflow.** There is no transition matrix; findings close when their dimensions reach a final disposition.
 - **Git history is the timeline; no rounds or workflow state are required.**
 - **The filesystem is the index; shared mutable files are minimized.**
 
 ## Repository contents
 
-- `SPEC.md` — normative RaC v0.4.3 specification
+- `SPEC.md` — normative RaC v0.5.0 specification
 - `AGENTS.md` — instructions for agents working in this repository
 - `SKILL.md` — portable RaC agent skill
 - `examples/` — reference review records
@@ -32,9 +32,9 @@ Each finding is an independent, independently writable artifact:
 1. Author creates or changes artifacts and opens a review context (for example, a PR).
 2. Reviewer creates a review and records findings as independent files.
 3. Participants discuss findings externally.
-4. Artifact owner records decisions.
-5. Author/implementer changes the reviewed artifacts.
-6. Verifier independently verifies results.
-7. Findings close; the review closes when no findings remain open.
+4. Author and Reviewer record decisions in each finding's Decision Log.
+5. Author implements accepted findings and appends Implementation Log entries.
+6. Reviewer verifies remediation and appends Verification Log entries.
+7. Findings close when their dimensions reach a final disposition; the review closes when no findings remain outstanding.
 
 See `SPEC.md` for the complete protocol.

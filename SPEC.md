@@ -2,7 +2,7 @@
 
 ## Version
 
-**RaC v0.4.3**
+**RaC v0.5.0**
 
 ## 1. Purpose
 
@@ -20,7 +20,8 @@ The goals of RaC are to:
 - remain easy for humans to read and edit;
 - provide explicit semantics for AI agents;
 - separate review, decision, implementation, and verification;
-- preserve role ownership over observations, decisions, and verification.
+- preserve role ownership over observations, decisions, implementation, and verification;
+- derive current finding state from append-only lifecycle logs.
 
 ## 2. Normative language
 
@@ -44,9 +45,11 @@ Identifiers MUST NOT change when wording, status, or implementation changes.
 
 ### 3.4 Role separation
 
-The reviewer records observations. The artifact owner records decisions. The verifier records verification.
+RaC defines two core roles: `Author` and `Reviewer`.
 
-A reviewer MUST NOT modify artifacts under review while acting as reviewer. An implementer MUST NOT modify reviewer-owned review records while acting as implementer. No role may silently rewrite another role's owned content. See Section 9.
+The reviewer records observations and findings and verifies remediation. The author creates the artifacts under review and implements accepted findings. Both author and reviewer participate in finding decisions.
+
+A reviewer MUST NOT modify artifacts under review while acting as reviewer. An author MUST NOT modify reviewer-owned review records while acting as author. No role may silently rewrite another role's owned content. See Section 9.
 
 ### 3.5 Explicit decisions
 
@@ -58,7 +61,7 @@ An actionable change requires an explicit accepted decision or explicit instruct
 
 Implementation and verification are distinct operations.
 
-An implementer SHOULD NOT verify their own implementation when independent verification is required.
+A policy MAY require that verification be performed by a different reviewer than the reviewer who created the finding, without introducing a separate `Verifier` role.
 
 ### 3.7 Discussion is external
 
@@ -68,7 +71,13 @@ Discussion MAY occur in pull requests, issues, chat, meetings, or other systems.
 
 ### 3.8 Minimize shared mutable files
 
-Findings MUST be stored so that most operations create one file or modify one file. Shared mutable files MUST be minimized to reduce merge conflicts. See Section 10.
+Findings MUST be stored so that most operations create one file or modify one file. Shared mutable files MUST be minimized to reduce merge conflicts. See Section 13.
+
+### 3.9 Append-only lifecycle logs
+
+Lifecycle progression MUST be recorded in append-only logs.
+
+Historical log entries MUST NOT be rewritten as part of normal lifecycle progression. Current state is derived from the logs. See Sections 10 and 11.
 
 ## 4. Terminology
 
@@ -86,15 +95,39 @@ The reviewer's description of the finding, its location, severity, and recommend
 
 ### Decision
 
-The agreed disposition for a finding, owned by the artifact owner.
+The agreed disposition for a finding, recorded in the Decision Log.
 
 ### Implementation
 
-A change to reviewed artifacts intended to satisfy an accepted decision.
+A change to reviewed artifacts intended to satisfy an accepted decision, recorded in the Implementation Log.
 
 ### Verification
 
-An independent assessment that implementation satisfies the decision and applicable acceptance criteria, recorded with evidence.
+An independent assessment that implementation satisfies the decision and applicable acceptance criteria, recorded in the Verification Log with evidence.
+
+### State
+
+The derived, materialised representation of a finding's current Decision, Implementation, and Verification values. See Section 8.5.
+
+### Decision Log
+
+The append-only lifecycle log recording the decisions made about a finding.
+
+### Implementation Log
+
+The append-only lifecycle log recording the implementation work performed for a finding.
+
+### Verification Log
+
+The append-only lifecycle log recording the verification results for a finding.
+
+### Author
+
+The person or agent who creates the artifacts under review and implements accepted findings.
+
+### Reviewer
+
+The person or agent who reviews artifacts, creates findings, participates in finding decisions, and verifies remediation.
 
 ### Scope
 
@@ -106,21 +139,9 @@ When a review covers a changeset, the scope SHOULD include a commit or pull-requ
 
 The reason or objective for conducting a review, expressed as free text.
 
-### Artifact owner
-
-The person or agent who owns the reviewed artifacts and decides the disposition of findings. Synonymous with author or implementer when acting in an implementation capacity.
-
-### Reviewer
-
-The person or agent who records observations and findings for a review.
-
-### Verifier
-
-The person or agent who independently records verification results for a finding.
-
 ### Outstanding finding
 
-A finding whose Status is `open`. See Section 11.
+A finding that has not reached closure. See Section 12.
 
 ## 5. Repository model
 
@@ -157,7 +178,7 @@ It SHOULD document:
 - the review layout and the paths of review records and finding files;
 - the review ID convention (for example `R###`);
 - the finding ID convention (for example `F###`);
-- the controlled status, decision, and verification vocabularies when a subset is used;
+- the controlled decision, implementation, and verification vocabularies when a subset is used;
 - the severity vocabulary when a subset is used;
 - active reviews when useful.
 
@@ -190,7 +211,7 @@ Recommended metadata:
 - created date;
 - RaC version (the protocol version the record was written against, for forward compatibility).
 
-The review status is summary metadata only. It MUST NOT be used to track individual finding workflow. See Section 11.
+The review status is summary metadata only. It MUST NOT be used to track individual finding workflow. See Section 12.
 
 Example:
 
@@ -205,7 +226,7 @@ Scope:
 Base: abc123
 ```
 
-A review MAY be closed only when there are no outstanding findings (Section 11).
+A review MAY be closed only when there are no outstanding findings (Section 12).
 
 ## 7. Findings
 
@@ -224,13 +245,14 @@ A finding SHOULD contain:
 
 - ID;
 - title;
-- status;
+- State;
 - severity when applicable;
 - location when applicable;
 - observation;
 - recommendation when applicable;
-- decision when known;
-- verification result and evidence when verified.
+- a Decision Log;
+- an Implementation Log when applicable;
+- a Verification Log when applicable.
 
 Acceptance criteria MAY be recorded within a finding when they help define a decision or verification.
 
@@ -238,12 +260,24 @@ Acceptance criteria MAY be recorded within a finding when they help define a dec
 
 A finding is stored in its own file under the review's `findings/` directory.
 
+The canonical finding structure is:
+
+```text
+Finding
+├── State
+├── Observation
+├── Recommendation
+├── Decision Log
+├── Implementation Log
+└── Verification Log
+```
+
 Example:
 
 ```markdown
 # F001 — Missing request timeout
 
-Status: open
+State: decision=accepted, implementation=implemented, verification=verified
 
 Severity: medium
 
@@ -258,32 +292,66 @@ The outbound request has no explicit timeout.
 
 Configure an explicit timeout.
 
-## Decision
+## Decision Log
 
-Pending.
+### D001 — accepted
 
-## Verification
+**Date:** 2026-09-14
+**Actor:** Author
 
-Pending.
+Rationale:
+A timeout will be added to all outbound requests.
+
+## Implementation Log
+
+### I001 — implemented
+
+**Date:** 2026-09-14
+**Actor:** Author
+
+Evidence:
+- Commit: abc123
+- Files:
+  - src/payment/client.ts
+
+## Verification Log
+
+### V001 — verified
+
+**Date:** 2026-09-14
+**Actor:** Reviewer
+
+Evidence:
+- Commit: abc123
+- Check: npm test -- payment-client
+- Result: pass
 ```
 
-Findings are independently writable. See Section 12 for merge-conflict design rules.
+Findings are independently writable. See Section 13 for merge-conflict design rules.
 
-## 8. Finding lifecycle
+## 8. Lifecycle model
 
-A finding has exactly two statuses:
+### 8.1 Independent dimensions
+
+A finding has three independent lifecycle dimensions:
 
 ```text
-Status:
-- open
-- closed
+Decision
+Implementation
+Verification
 ```
 
-Status is the only workflow field on a finding. Everything else is represented separately.
+The dimensions are independent. Any combination MAY occur:
 
-### 8.1 Decision
+- an accepted finding MAY remain unimplemented;
+- an implemented finding MAY remain unverified;
+- failed verification does not erase or invalidate implementation history.
 
-The disposition of a finding, owned by the artifact owner. Recommended values:
+The specification does not define a transition matrix. Agents MUST NOT reason about legal state transitions or workflow graphs.
+
+### 8.2 Decision
+
+The disposition of a finding, recorded in the Decision Log. Recommended values:
 
 ```text
 pending
@@ -295,9 +363,18 @@ deferred
 not_applicable
 ```
 
-### 8.2 Verification
+### 8.3 Implementation
 
-The independent verification result for a finding, owned by the verifier. Recommended values:
+The implementation work performed for a finding, recorded in the Implementation Log. Recommended values:
+
+```text
+pending
+implemented
+```
+
+### 8.4 Verification
+
+The verification result for a finding, recorded in the Verification Log. Recommended values:
 
 ```text
 pending
@@ -306,13 +383,36 @@ failed
 not_required
 ```
 
-The specification does not define a transition matrix. Agents MUST NOT reason about legal state transitions or workflow graphs.
+### 8.5 State
 
-## 9. Ownership
+`State` is the derived, materialised representation of the current finding condition.
+
+It MUST represent the current Decision, Implementation, and Verification values:
+
+```text
+State: decision=<value>, implementation=<value>, verification=<value>
+```
+
+`State` MUST be derived from the finding record and its lifecycle logs. The lifecycle logs remain the authoritative historical record.
+
+`State` MUST NOT become the authoritative history. It is a convenience view so that agents can determine the current finding condition without processing the complete historical context when a valid `State` is available.
+
+`State` does not require a central registry or database. It does not introduce unnecessary duplication of historical information; it reflects only the current values.
+
+## 9. Roles and ownership
 
 Ownership is defined by section, not by entire file.
 
-### 9.1 Reviewer owns Observation
+### 9.1 Core roles
+
+The core RaC role model defines only two roles:
+
+- **Author** — the creator of the artifacts under review, who implements accepted findings.
+- **Reviewer** — the reviewer of artifacts, who creates findings, participates in finding decisions, and verifies remediation.
+
+There is no separate `Artifact Owner` or `Verifier` role. A policy MAY require independent verification by a different reviewer without introducing a separate `Verifier` role.
+
+### 9.2 Reviewer owns Observation
 
 The reviewer creates and owns:
 
@@ -323,170 +423,237 @@ Severity
 Location
 ```
 
-The observation SHOULD NOT be silently rewritten by the artifact owner or any other role. If the observation is incorrect, add clarification or superseding information rather than silently replacing it.
+The observation SHOULD NOT be silently rewritten by the author or any other role. If the observation is incorrect, add clarification or superseding information rather than silently replacing it.
 
-### 9.2 Artifact owner owns Decision
+### 9.3 Decision Log
 
-The artifact owner decides the disposition of the finding and owns:
+Both the author and the reviewer MAY contribute entries to the Decision Log.
 
-```text
-Decision
-Decision rationale
-```
+The author decides the disposition of the finding. The reviewer participates in finding decisions. The reviewer MUST NOT unilaterally make a decision on behalf of the author.
 
-The reviewer MUST NOT unilaterally make a decision on behalf of the artifact owner.
+### 9.4 Implementation Log
 
-### 9.3 Verifier owns Verification
+Implementation Log entries are authored by the `Author`.
 
-The verifier records:
+### 9.5 Verification Log
 
-```text
-Verification result
-Evidence
-Checks performed
-```
-
-Example:
-
-```markdown
-## Verification
-
-Status: verified
-
-Evidence:
-- Commit: abc123
-- Check: npm test
-- Result: pass
-```
+Verification Log entries are authored by the `Reviewer`.
 
 The same person or agent MAY perform different roles at different times, but MUST respect the boundaries of the current operation.
 
-## 10. Merge conflict design rules
+## 10. Lifecycle logs
 
-Implement the following design constraints.
-
-### 10.1 One finding per file
-
-Never store multiple findings in one mutable document.
-
-### 10.2 Creating a finding must not modify existing findings
-
-Creating a new finding file MUST NOT require updating any existing finding file.
-
-### 10.3 Avoid global indexes
-
-Creating or closing a review, or creating, closing, or verifying a finding, MUST NOT require updating `.review/README.md` or any other global index. The filesystem is the primary index.
-
-### 10.4 Minimize shared files
-
-The only shared review-level file SHOULD normally be `review.md`. Agents SHOULD rarely need to modify it.
-
-## 11. Outstanding findings
-
-A finding is outstanding when its Status is `open`.
-
-A review has no outstanding findings when every finding belonging to the review has Status `closed`.
-
-The review status MUST NOT duplicate a manually maintained count of findings. Agents SHOULD derive outstanding findings by inspecting finding files.
-
-Example:
+Each lifecycle dimension has its own append-only log:
 
 ```text
-F001 → closed
-F002 → closed
-F003 → open
-
-Result:
-Outstanding findings exist.
+Decision Log
+Implementation Log
+Verification Log
 ```
 
-Example:
+Logs contain decision-relevant information, not discussion transcripts.
 
-```text
-F001 → closed
-F002 → closed
-F003 → closed
+Each log entry MUST have:
 
-Result:
-No outstanding findings.
-```
+- a stable identifier;
+- an actor;
+- a date;
+- content.
 
-A review MAY be closed only when no outstanding findings exist.
+### 10.1 Decision Log
 
-## 12. Closure
+Both `Author` and `Reviewer` can contribute to the Decision Log.
 
-A finding MAY be closed when:
+Recommended local ID format: `D001`, `D002`, ...
 
-1. a final decision exists; and
-2. required verification has completed.
-
-Examples.
-
-Accepted and verified:
-
-```text
-Status: closed
-Decision: accepted
-Verification: verified
-```
-
-Rejected:
-
-```text
-Status: closed
-Decision: rejected
-Verification: not_required
-```
-
-Accepted risk:
-
-```text
-Status: closed
-Decision: accepted_risk
-Verification: not_required
-```
-
-Deferred:
-
-```text
-Status: closed
-Decision: deferred
-Verification: not_required
-```
-
-A deferred finding is no longer outstanding for the current review. If it needs future action, create a new review or issue reference.
-
-## 13. Append-oriented updates
-
-Prefer appending or changing isolated sections. Do not rewrite an entire finding when only one owned section changes.
-
-For example, the artifact owner updates only:
+Example entry:
 
 ```markdown
-## Decision
+### D001 — accepted
 
-Status: accepted
+**Date:** 2026-09-14
+**Actor:** Author
 
 Rationale:
 A timeout will be added to all outbound requests.
 ```
 
-The verifier updates only:
+### 10.2 Implementation Log
+
+Implementation Log entries are authored by the `Author`.
+
+Recommended local ID format: `I001`, `I002`, ...
+
+Implementation evidence SHOULD reference Git-native artifacts such as commits, pull requests, or changed files.
+
+Example entry:
 
 ```markdown
-## Verification
+### I001 — implemented
 
-Status: verified
+**Date:** 2026-09-14
+**Actor:** Author
 
 Evidence:
 - Commit: abc123
-- Check: npm test
+- Files:
+  - src/payment/client.ts
+```
+
+### 10.3 Verification Log
+
+Verification Log entries are authored by the `Reviewer`.
+
+Recommended local ID format: `V001`, `V002`, ...
+
+Example entry:
+
+```markdown
+### V001 — verified
+
+**Date:** 2026-09-14
+**Actor:** Reviewer
+
+Evidence:
+- Commit: abc123
+- Check: npm test -- payment-client
+- Result: pass
+```
+
+### 10.4 Append-only and immutability
+
+Historical log entries MUST NOT be rewritten as part of normal lifecycle progression.
+
+To record new information, append a new entry with a new stable identifier. Do not edit an existing entry.
+
+Failed verification does not erase or invalidate implementation history. A later `verified` entry supersedes a prior `failed` entry in the derived `State`, without rewriting it.
+
+## 11. Closure semantics
+
+Closure is derived deterministically from the finding's independent lifecycle dimensions. The specification does not define a workflow state machine.
+
+A finding MAY be considered closed when:
+
+1. a final decision exists (the Decision value is not `pending`); and
+2. if the decision requires implementation, the Implementation is recorded as `implemented`; and
+3. if verification is required, the Verification is recorded as `verified`.
+
+Verification is required when the decision is `accepted` or `alternative`, unless a policy declares verification `not_required`.
+
+Examples.
+
+Accepted, implemented, and verified:
+
+```text
+State: decision=accepted, implementation=implemented, verification=verified
+```
+
+Rejected:
+
+```text
+State: decision=rejected, implementation=pending, verification=not_required
+```
+
+Accepted risk:
+
+```text
+State: decision=accepted_risk, implementation=pending, verification=not_required
+```
+
+Deferred:
+
+```text
+State: decision=deferred, implementation=pending, verification=not_required
+```
+
+Not applicable:
+
+```text
+State: decision=not_applicable, implementation=pending, verification=not_required
+```
+
+Not closed:
+
+```text
+State: decision=pending, implementation=pending, verification=pending
+State: decision=accepted, implementation=pending, verification=pending
+State: decision=accepted, implementation=implemented, verification=pending
+State: decision=accepted, implementation=implemented, verification=failed
+```
+
+- An `accepted` finding with pending implementation is not closed.
+- An implemented finding with pending verification is not closed when verification is required.
+- Failed verification prevents closure when verification is required.
+
+A deferred finding is no longer outstanding for the current review. If it needs future action, create a new review or issue reference.
+
+## 12. Outstanding findings
+
+A finding is outstanding when it is not closed per Section 11.
+
+A review has no outstanding findings when every finding belonging to the review is closed.
+
+The review status MUST NOT duplicate a manually maintained count of findings. Agents SHOULD derive outstanding findings by inspecting finding files and their lifecycle logs.
+
+A review MAY be closed only when no outstanding findings exist.
+
+## 13. Merge conflict design rules
+
+Implement the following design constraints.
+
+### 13.1 One finding per file
+
+Never store multiple findings in one mutable document.
+
+### 13.2 Creating a finding must not modify existing findings
+
+Creating a new finding file MUST NOT require updating any existing finding file.
+
+### 13.3 Avoid global indexes
+
+Creating or closing a review, or creating, closing, or verifying a finding, MUST NOT require updating `.review/README.md` or any other global index. The filesystem is the primary index.
+
+### 13.4 Minimize shared files
+
+The only shared review-level file SHOULD normally be `review.md`. Agents SHOULD rarely need to modify it.
+
+## 14. Append-oriented updates
+
+Prefer appending log entries to rewriting a finding. Do not rewrite an entire finding when only one owned section changes.
+
+For example, the author updates only the Implementation Log and the derived `State`:
+
+```markdown
+## Implementation Log
+
+### I001 — implemented
+
+**Date:** 2026-09-14
+**Actor:** Author
+
+Evidence:
+- Commit: abc123
+```
+
+The reviewer updates only the Verification Log and the derived `State`:
+
+```markdown
+## Verification Log
+
+### V001 — verified
+
+**Date:** 2026-09-14
+**Actor:** Reviewer
+
+Evidence:
+- Commit: abc123
+- Check: npm test -- payment-client
 - Result: pass
 ```
 
 This minimizes overlapping edits and merge conflicts.
 
-## 14. Discussion
+## 15. Discussion
 
 RaC does not define a feedback-thread primitive.
 
@@ -499,7 +666,7 @@ Discussion MAY happen:
 
 RaC SHOULD record the final decision and verification result, not reproduce the entire conversation.
 
-## 15. Markdown as the canonical source
+## 16. Markdown as the canonical source
 
 Markdown MUST be the canonical source format.
 
@@ -513,7 +680,7 @@ Markdown → parser → JSON
 
 Do not use `Markdown + manually synchronized JSON`.
 
-### 15.1 Markdown-to-schema projection
+### 16.1 Markdown-to-schema projection
 
 The optional schemas in `schemas/` are machine-readable projections of the Markdown records. This section defines how each projection is derived.
 
@@ -526,7 +693,7 @@ Review metadata (`schemas/review.schema.json`):
 | `Status: open` / `Status: closed` | `status` |
 | `Scope:` block | `scope` |
 | `Base: abc123` | `base` |
-| `RaC version: v0.4.3` | `rac_version` |
+| `RaC version: v0.5.0` | `rac_version` |
 | `Closed: <date>` | `closed_date` |
 | Optional `## Review Outcome` section content | `outcome` |
 
@@ -535,17 +702,18 @@ Finding (`schemas/finding.schema.json`):
 | Markdown element | Schema property |
 |------------------|-----------------|
 | `# F001 — Title` heading | `id` (`F001`) and `title` (text after the em dash) |
-| `Status: open` / `Status: closed` | `status` |
+| `State: decision=..., implementation=..., verification=...` | `state` (object with `decision`, `implementation`, `verification`) |
 | `Severity: medium` | `severity` |
 | `Location:` block | `location` |
 | `## Observation` content | `observation` |
 | `## Recommendation` content | `recommendation` |
-| `## Decision` content | `decision` and, when a `Rationale:` is present, `decision_rationale` |
-| `## Verification` content | `verification` and, when evidence is present, `evidence` |
+| `## Decision Log` entries | `decision_log` (array of entries with `id`, `value`, `date`, `actor`, and `content`) |
+| `## Implementation Log` entries | `implementation_log` (array of entries with `id`, `value`, `date`, `actor`, and `content`) |
+| `## Verification Log` entries | `verification_log` (array of entries with `id`, `value`, `date`, `actor`, and `content`) |
 
 Fields that appear in the Markdown but have no schema property are not projected.
 
-## 16. Progressive loading
+## 17. Progressive loading
 
 Agents MUST load the minimum information necessary for the requested operation.
 
@@ -563,11 +731,13 @@ Relevant source files
 
 Avoid loading the entire specification, the entire skill, all reviews, all findings, all history, or the entire repository unless the task actually requires them.
 
-## 17. Agent operations
+## 18. Agent operations
 
 Define operations with minimal write scope.
 
-### 17.1 Review
+### 18.1 Review
+
+Role: Reviewer.
 
 Input: source files, review scope, relevant instructions.
 
@@ -575,42 +745,50 @@ Output: new finding files.
 
 Do not modify unrelated findings.
 
-### 17.2 Implement
+### 18.2 Implement
+
+Role: Author.
 
 Input: target finding, relevant source files.
 
 Output: source changes.
 
-Do not modify the finding unless explicitly authorized to record implementation evidence.
+Append an entry to the target finding's Implementation Log and update its derived `State` when explicitly authorized to record implementation evidence.
 
-### 17.3 Decide
+Do not modify the Observation or other reviewer-owned sections.
 
-Input: target finding, artifact owner response.
+### 18.3 Decide
 
-Output: an update to the Decision section only.
+Role: Author or Reviewer.
 
-### 17.4 Verify
+Input: target finding, disposition response.
+
+Output: a new Decision Log entry and an updated derived `State`.
+
+### 18.4 Verify
+
+Role: Reviewer.
 
 Input: target finding, implementation, relevant tests.
 
-Output: verification result and evidence.
+Output: a new Verification Log entry with evidence and an updated derived `State`.
 
 Only modify the target finding.
 
-### 17.5 Close
+### 18.5 Close
 
-Input: all finding statuses.
+Input: all finding states.
 
 Output: review status update if appropriate.
 
 Before closing a review:
 
 1. enumerate finding files;
-2. check each finding Status;
-3. if any finding is open, do not close the review;
+2. check each finding's derived `State`;
+3. if any finding is outstanding (Section 12), do not close the review;
 4. otherwise, close the review.
 
-## 18. Multiple reviews and relationships
+## 19. Multiple reviews and relationships
 
 A repository MAY contain multiple independent reviews.
 
@@ -628,23 +806,24 @@ Related To
 
 Historical review records SHOULD NOT be rewritten merely because a later review exists.
 
-## 19. Conformance
+## 20. Conformance
 
-A RaC implementation conforms to v0.4.3 when it:
+A RaC implementation conforms to v0.5.0 when it:
 
 1. supports multiple review records;
 2. provides stable review and finding IDs;
 3. stores each finding as an independent file;
-4. preserves role ownership boundaries over observations, decisions, and verification;
-5. separates discussion from the review record;
-6. distinguishes recommendations from decisions;
-7. distinguishes implementation from verification;
-8. represents finding status as `open | closed`;
-9. derives review completion from finding statuses;
-10. provides a human-readable Markdown representation.
+4. defines two core roles, `Author` and `Reviewer`;
+5. preserves role ownership boundaries over observations, decisions, implementation, and verification;
+6. separates discussion from the review record;
+7. distinguishes recommendations from decisions;
+8. distinguishes implementation from verification;
+9. records lifecycle progression in append-only Decision, Implementation, and Verification logs;
+10. derives `State` from the finding record and lifecycle logs;
+11. provides a human-readable Markdown representation.
 
-## 20. Fundamental invariant
+## 21. Fundamental invariant
 
-> The reviewer observes. The artifact owner decides. The verifier verifies.
+> The reviewer observes and verifies. The author implements. Both record decisions.
 
 The same human or agent MAY perform multiple roles at different times, but MUST NOT collapse ownership boundaries within a single operation.

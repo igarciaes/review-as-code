@@ -3,7 +3,7 @@
   "$id": "https://review-as-code.dev/schemas/review.schema.json",
   "title": "Review as Code Review Metadata",
   "type": "object",
-  "description": "Optional machine-readable projection of a RaC review metadata file, derived per SPEC Section 15.1. Markdown remains the canonical human-readable format. Additional properties are permitted so repositories MAY extend the record.",
+  "description": "Optional machine-readable projection of a RaC review metadata file, derived per SPEC Section 16.1. Markdown remains the canonical human-readable format. Additional properties are permitted so repositories MAY extend the record.",
   "required": [
     "id",
     "title",

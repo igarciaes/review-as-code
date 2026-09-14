@@ -1,5 +1,30 @@
 # Changelog
 
+## [v0.5.0] - 2026-09-14
+
+### Added
+
+- Two-core-role model: `Author` and `Reviewer`. The Author creates the artifacts under review and implements accepted findings; the Reviewer creates findings, participates in decisions, and verifies remediation. A policy MAY require independent verification by a different Reviewer without introducing a separate `Verifier` role.
+- Three independent finding lifecycle dimensions — Decision, Implementation, and Verification — with no transition matrix.
+- Append-only Decision Log, Implementation Log, and Verification Log per finding, with stable entry IDs, actor, date, and decision-relevant content.
+- Derived `State` (`decision=..., implementation=..., verification=...`) materialised from the finding record and lifecycle logs, replacing the previously considered `Snapshot` concept.
+- Explicit closure semantics: a finding is closed when a final decision exists and any required implementation and verification are complete; failed verification prevents closure when verification is required.
+- New example scenarios in `examples/R042/` covering an accepted-but-unimplemented finding (F005), an implemented-but-unverified finding (F006), and a failed verification that preserves implementation history (F007).
+
+### Changed
+
+- `SPEC.md` rewritten around the Author/Reviewer model and independent lifecycle dimensions: §3.4 role separation, §4 terminology, §8 lifecycle model and State, §9 roles and ownership, §10 lifecycle logs, §11 closure semantics, §12 outstanding findings, and §16.1 Markdown-to-schema projection.
+- `SKILL.md` synced to the two-role model and the append-only lifecycle logs; `Artifact Owner` and `Verifier` removed as roles.
+- `README.md` and `AGENTS.md` synced to the redesigned core model.
+- `schemas/finding.schema.json` now projects `state` and the three lifecycle log arrays; the `status` field is removed.
+- Existing examples migrated to the new finding structure without changing stable finding identifiers.
+- Version references synced to RaC v0.5.0 across `SPEC.md`, `README.md`, `SKILL.md`, `AGENTS.md`, and `CHANGELOG.md`.
+
+### Removed
+
+- `Artifact Owner` and `Verifier` as core RaC roles.
+- The single finding `Status: open | closed` workflow field in favor of derived `State`.
+
 ## [v0.4.3] - 2026-09-14
 
 ### Changed
