@@ -2,7 +2,7 @@
 
 ## Version
 
-**RaC v0.5.2**
+**RaC v0.5.3**
 
 ## 1. Purpose
 
@@ -693,7 +693,7 @@ Review metadata (`schemas/review.schema.json`):
 | `Status: open` / `Status: closed` | `status` |
 | `Scope:` block | `scope` |
 | `Base: abc123` | `base` |
-| `RaC version: v0.5.2` | `rac_version` |
+| `RaC version: v0.5.3` | `rac_version` |
 | `Closed: <date>` | `closed_date` |
 | Optional `## Review Outcome` section content | `outcome` |
 
@@ -808,7 +808,7 @@ Historical review records SHOULD NOT be rewritten merely because a later review 
 
 ## 20. Conformance
 
-A RaC implementation conforms to v0.5.2 when it:
+A RaC implementation conforms to v0.5.3 when it:
 
 1. supports multiple review records;
 2. provides stable review and finding IDs;

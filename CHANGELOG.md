@@ -1,5 +1,12 @@
 # Changelog
 
+## [v0.5.3] - 2026-09-14
+
+### Fixed
+
+- P001 plan record task headings reformatted from `###` to `Task:` to satisfy the PaC protocol validator, resolving finding P001-T007-F004.
+- Version references synced to RaC v0.5.3 across `SPEC.md`, `README.md`, `SKILL.md`, `AGENTS.md`, and `CHANGELOG.md`.
+
 ## [v0.5.2] - 2026-09-14
 
 ### Changed
