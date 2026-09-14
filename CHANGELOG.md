@@ -1,5 +1,12 @@
 # Changelog
 
+## [v0.5.4] - 2026-09-14
+
+### Changed
+
+- P001 plan record updated with decision P001-D005 resolving finding P001-T007-F004 (plan record fails the PaC protocol validator) as `Resolved`; task states P001-T001 through P001-T007 re-derived as `Verified`; verification evidence refreshed to reflect the passing validator run after commit `efaf416`.
+- Version references synced to RaC v0.5.4 across `SPEC.md`, `README.md`, `SKILL.md`, `AGENTS.md`, and `CHANGELOG.md`.
+
 ## [v0.5.3] - 2026-09-14
 
 ### Fixed
