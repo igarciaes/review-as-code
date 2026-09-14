@@ -1,5 +1,16 @@
 # Changelog
 
+## [v0.4.2] - 2026-09-14
+
+### Added
+
+- P001 plan under `.plan/plans/` defining the two-role (Author/Reviewer), three-dimension lifecycle redesign with append-only Decision, Implementation, and Verification logs and derived State.
+- `.plan/README.md` documenting the plan layout, ID conventions, and PaC roles.
+
+### Changed
+
+- Version references synced to RaC v0.4.2 across `SPEC.md`, `README.md`, `SKILL.md`, `AGENTS.md`, and `CHANGELOG.md`.
+
 ## [v0.4.1] - 2026-09-13
 
 ### Added

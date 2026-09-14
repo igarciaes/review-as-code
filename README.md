@@ -18,7 +18,7 @@ Each finding is an independent, independently writable artifact:
 
 ## Repository contents
 
-- `SPEC.md` — normative RaC v0.4.1 specification
+- `SPEC.md` — normative RaC v0.4.2 specification
 - `AGENTS.md` — instructions for agents working in this repository
 - `SKILL.md` — portable RaC agent skill
 - `examples/` — reference review records
