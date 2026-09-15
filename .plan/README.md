@@ -1,6 +1,6 @@
 # Plan as Code — Layout and Conventions
 
-This repository uses the Plan as Code (PaC) protocol for durable, Git-native implementation planning. See the PaC specification for normative rules.
+This repository uses the Plan as Code (PaC) protocol for durable, Git-native implementation planning. The PaC specification (`SPEC.md`) is the normative authority; always follow the latest available version of the spec.
 
 ## Layout
 

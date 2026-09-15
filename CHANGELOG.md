@@ -1,5 +1,20 @@
 # Changelog
 
+## [v0.5.6] - 2026-09-15
+
+### Changed
+
+- Refactored `SKILL.md` from a role-assigning agent definition into a role-agnostic operation skill: it supports only the SPEC-defined operations (Review, Implement, Decide, Verify, Inspect, Close) and enforces SPEC ownership boundaries without assigning the caller a role, so it can be used by any agent role. The caller's role is determined by context or policy.
+- `SKILL.md` now requires post-operation record verification after every operation execution: a mandatory `## Post-operation verification` section checks the produced records for SPEC conformance and corrects any deviation before reporting completion.
+- Enforced one operation per round: `SPEC.md` §18.6 requires each RaC round to perform exactly one operation, and `SKILL.md` enforces it (for example, `Verify` and `Close` are performed in separate rounds, never in one shot).
+- Version references synced to RaC v0.5.6 across `SPEC.md`, `README.md`, `SKILL.md`, `AGENTS.md`, and `CHANGELOG.md`.
+
+### Fixed
+
+- Tightened `SPEC.md` §20 conformance item 9 to require each lifecycle log entry to record its actor.
+- Required `content` on `schemas/finding.schema.json` `logEntry` alongside `id`, `value`, `date`, and `actor`, matching the mandatory entry fields of `SPEC.md` §10.
+- Added an actor check to the `AGENTS.md` "Building and validating" checklist.
+
 ## [v0.5.5] - 2026-09-14
 
 ### Changed

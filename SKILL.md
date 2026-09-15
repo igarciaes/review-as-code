@@ -1,15 +1,28 @@
 ---
 name: review-as-code
-description: Use to perform Review as Code (RaC) operations — review, implement, decide, verify, inspect, and close — for code, documentation, specifications, and other reviewable artifacts. Follow SPEC.md when present; the specification is authoritative over this skill.
+description: Use to perform Review as Code (RaC) operations — review, implement, decide, verify, inspect, and close — for code, documentation, specifications, and other reviewable artifacts. This role-agnostic skill executes only the SPEC-defined operations and enforces SPEC conformance without assigning the caller a role. Follow SPEC.md when present; the specification is authoritative over this skill.
 license: MIT
 metadata:
   author: igarciaes
-  version: 0.5.5
+  version: 0.5.6
 ---
 
 # Review as Code
 
-Use this skill to perform RaC operations. Follow `SPEC.md` when present; it is authoritative over this skill.
+This skill executes the RaC operations defined in `SPEC.md` and enforces spec conformance. It is role-agnostic: it does not assign a role to the calling agent. The caller's role is determined by the surrounding context or policy. The skill performs the requested operation and enforces the ownership boundaries defined in `SPEC.md` for whichever role the operation is performed under. Follow `SPEC.md` when present; it is authoritative over this skill.
+
+## Scope
+
+This skill supports only the operations required by `SPEC.md`:
+
+- **Review** — create finding files from inspected artifacts.
+- **Implement** — modify reviewed artifacts and record implementation evidence.
+- **Decide** — record a finding disposition.
+- **Verify** — record verification evidence.
+- **Inspect** — report state without modifying anything.
+- **Close** — close findings that reached a final disposition.
+
+It performs the operation and confirms the record stays SPEC-conformant. It does not define agent behavior beyond the operations and conformance rules below.
 
 ## Discovery
 
@@ -33,14 +46,16 @@ Default layout:
             └── F002.md
 ```
 
-## Roles
+## Ownership as enforced constraints
 
-- **Reviewer** creates observations and findings, participates in finding decisions, and verifies remediation.
-- **Author** creates the artifacts under review, decides the disposition of findings, and implements accepted findings.
+`SPEC.md` §9 defines section-level ownership. This skill does not assign these roles to the caller; it enforces them for the role under which the operation is performed.
 
-There is no separate `Artifact Owner` or `Verifier` role. A policy MAY require independent verification by a different reviewer.
+- The **Reviewer** owns Observation, Recommendation, Severity, and Location. They MUST NOT be silently rewritten. If incorrect, add clarification or superseding information rather than silently replacing them.
+- The **Author** authors Implementation Log entries.
+- The **Reviewer** authors Verification Log entries.
+- The **Decision Log** is shared: both the Author and the Reviewer MAY contribute. The Author decides the disposition; the Reviewer participates but MUST NOT unilaterally make a decision on behalf of the Author.
 
-A role must not silently rewrite another role's owned content.
+> This skill does not determine which role the caller is acting as. The caller's role comes from context or policy. The skill enforces the boundaries above for whichever role the current operation is performed under.
 
 ## Findings
 
@@ -64,21 +79,43 @@ Finding
 
 ## Lifecycle logs
 
-- The **Decision Log** records the disposition of a finding; the Author and the Reviewer may both contribute.
+- The **Decision Log** records the disposition of a finding; both the Author and the Reviewer may contribute.
 - The **Implementation Log** records implementation work; the Author authors entries and MAY reference commits, pull requests, or changed files.
 - The **Verification Log** records verification results; the Reviewer authors entries and records evidence.
 - Log entries MUST NOT be rewritten. Append a new entry to record new information.
+- Each log entry has a stable identifier, an actor, a date, and content.
 
 ## Operations
 
-- **Review:** create finding files from inspected artifacts.
-- **Implement:** modify the reviewed artifacts; append an Implementation Log entry and update State when authorized to record implementation evidence.
-- **Decide:** append a Decision Log entry and update State.
-- **Verify:** append a Verification Log entry with evidence and update State.
-- **Inspect:** report state without modifying anything.
-- **Close:** close findings that reached a final disposition.
+For each operation, modify the minimum set of files, respect the ownership constraints above, and run the mandatory post-operation verification below before reporting completion.
 
-Modify the minimum set of files. Do not update unrelated findings.
+Each round performs exactly one operation (`SPEC.md` §18.6). Operations MUST NOT be combined in a single round: for example, `Verify` and `Close` are performed in separate rounds, never in one shot. Updating the derived `State` is part of an operation, not a separate operation.
+
+- **Review** — create finding files from inspected artifacts. Only create new finding files; do not modify unrelated findings.
+- **Implement** — modify the reviewed artifacts; when authorized to record implementation evidence, append an Implementation Log entry as the Author and update the derived `State`. Do not modify reviewer-owned sections (Observation, Recommendation, Severity, Location).
+- **Decide** — append a Decision Log entry as the Author or Reviewer, per the ownership constraints, and update the derived `State`.
+- **Verify** — append a Verification Log entry with evidence as the Reviewer and update the derived `State`. Only modify the target finding.
+- **Inspect** — report state without modifying anything.
+- **Close** — close findings that reached a final disposition; update review status only if appropriate.
+
+When updating `State`, derive it from the finding record and its lifecycle logs. The lifecycle logs remain the authoritative history; do not rewrite historical entries.
+
+## Post-operation verification
+
+After every operation execution, and before reporting completion, verify that the records produced by the operation stay SPEC-conformant. If any check below fails, correct the deviation before finishing. Do not rewrite lifecycle logs that the current operation did not produce; historical entries must remain untouched.
+
+Concrete checks:
+
+- Every new lifecycle log entry records `id`, `value`, `date`, `actor`, and `content` (`SPEC.md` §10).
+- Entry actors match the operation's role boundaries (`SPEC.md` §9.3–9.5).
+- The derived `State` matches the finding record and the lifecycle logs (`SPEC.md` §8.5, §20.10).
+- No historical log entry was rewritten.
+- Reviewer-owned sections (Observation, Recommendation, Severity, Location) were not silently modified.
+- Only the intended files changed.
+- Exactly one operation was performed (`SPEC.md` §18.6).
+- `Close` runs only when no finding is outstanding (`SPEC.md` §18.5).
+- Schema validation runs when applicable (`SPEC.md` §16.1).
+- `Inspect` modifies nothing.
 
 ## Outstanding Findings
 
@@ -92,4 +129,4 @@ A review may be closed only when no outstanding findings exist. Before closing, 
 
 > The reviewer observes and verifies. The author implements. Both record decisions.
 
-The same agent may perform different roles at different times, but must respect the boundaries of the current operation.
+This skill assigns no role and is usable by any agent role. The same agent may perform different roles at different times, but must respect the boundaries of the current operation.

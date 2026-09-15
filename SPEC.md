@@ -2,7 +2,7 @@
 
 ## Version
 
-**RaC v0.5.5**
+**RaC v0.5.6**
 
 ## 1. Purpose
 
@@ -693,7 +693,7 @@ Review metadata (`schemas/review.schema.json`):
 | `Status: open` / `Status: closed` | `status` |
 | `Scope:` block | `scope` |
 | `Base: abc123` | `base` |
-| `RaC version: v0.5.5` | `rac_version` |
+| `RaC version: v0.5.6` | `rac_version` |
 | `Closed: <date>` | `closed_date` |
 | Optional `## Review Outcome` section content | `outcome` |
 
@@ -788,6 +788,16 @@ Before closing a review:
 3. if any finding is outstanding (Section 12), do not close the review;
 4. otherwise, close the review.
 
+### 18.6 One operation per round
+
+Each round MUST perform exactly one operation.
+
+A round performs exactly one of the operations defined in Sections 18.1–18.5 (Review, Implement, Decide, Verify, or Close). Operations MUST NOT be combined in a single round.
+
+For example, `Verify` records a verification log entry and updates the derived `State`; `Close` updates the review status. These MUST be performed in separate rounds and MUST NOT be performed in one shot.
+
+Updating the derived `State` is part of an operation, not a separate operation. An operation that records a log entry or closes a review updates the derived `State` as part of that same operation.
+
 ## 19. Multiple reviews and relationships
 
 A repository MAY contain multiple independent reviews.
@@ -808,7 +818,7 @@ Historical review records SHOULD NOT be rewritten merely because a later review 
 
 ## 20. Conformance
 
-A RaC implementation conforms to v0.5.5 when it:
+A RaC implementation conforms to v0.5.6 when it:
 
 1. supports multiple review records;
 2. provides stable review and finding IDs;
@@ -818,7 +828,7 @@ A RaC implementation conforms to v0.5.5 when it:
 6. separates discussion from the review record;
 7. distinguishes recommendations from decisions;
 8. distinguishes implementation from verification;
-9. records lifecycle progression in append-only Decision, Implementation, and Verification logs;
+9. records lifecycle progression in append-only Decision, Implementation, and Verification logs, where each log entry records its actor;
 10. derives `State` from the finding record and lifecycle logs;
 11. provides a human-readable Markdown representation.
 
