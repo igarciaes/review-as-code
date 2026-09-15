@@ -1,6 +1,6 @@
 # P005 — Require an eligible decision before implementing a finding
 
-**Status:** Planned
+**Status:** Completed
 **Scope:** `SPEC.md`, `SKILL.md`, `examples/R042/findings/F008.md`, `AGENTS.md`, `README.md`, `CHANGELOG.md`, `.plan/P005/`
 **Planner:** planner-agent
 **Created:** 2026-09-15
