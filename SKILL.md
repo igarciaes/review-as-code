@@ -4,7 +4,7 @@ description: Use to perform Review as Code (RaC) operations — review, implemen
 license: MIT
 metadata:
   author: igarciaes
-  version: 0.5.6
+  version: 0.6.0
 ---
 
 # Review as Code
@@ -53,7 +53,7 @@ Default layout:
 - The **Reviewer** owns Observation, Recommendation, Severity, and Location. They MUST NOT be silently rewritten. If incorrect, add clarification or superseding information rather than silently replacing them.
 - The **Author** authors Implementation Log entries.
 - The **Reviewer** authors Verification Log entries.
-- The **Decision Log** is shared: both the Author and the Reviewer MAY contribute. The Author decides the disposition; the Reviewer participates but MUST NOT unilaterally make a decision on behalf of the Author.
+- The **Decision Log** is shared: both the Author and the Reviewer MAY contribute. The Author decides the disposition; the Reviewer participates but MUST NOT unilaterally make a decision on behalf of the Author. Exception: the Reviewer MAY unilaterally record an `accepted_risk` decision (`SPEC.md` §9.3).
 
 > This skill does not determine which role the caller is acting as. The caller's role comes from context or policy. The skill enforces the boundaries above for whichever role the current operation is performed under.
 
@@ -92,7 +92,7 @@ For each operation, modify the minimum set of files, respect the ownership const
 Each round performs exactly one operation (`SPEC.md` §18.6). Operations MUST NOT be combined in a single round: for example, `Verify` and `Close` are performed in separate rounds, never in one shot. Updating the derived `State` is part of an operation, not a separate operation.
 
 - **Review** — create finding files from inspected artifacts. Only create new finding files; do not modify unrelated findings.
-- **Implement** — modify the reviewed artifacts; when authorized to record implementation evidence, append an Implementation Log entry as the Author and update the derived `State`. Do not modify reviewer-owned sections (Observation, Recommendation, Severity, Location).
+- **Implement** — modify the reviewed artifacts; when authorized to record implementation evidence, append an Implementation Log entry as the Author and update the derived `State`. Do not implement a finding whose Decision Log lacks an eligible decision (`accepted` by the Author or `accepted_risk` by the Reviewer) (`SPEC.md` §8.1, §8.3, §18.2). Do not modify reviewer-owned sections (Observation, Recommendation, Severity, Location).
 - **Decide** — append a Decision Log entry as the Author or Reviewer, per the ownership constraints, and update the derived `State`.
 - **Verify** — append a Verification Log entry with evidence as the Reviewer and update the derived `State`. Only modify the target finding.
 - **Inspect** — report state without modifying anything.
@@ -108,7 +108,8 @@ Concrete checks:
 
 - Every new lifecycle log entry records `id`, `value`, `date`, `actor`, and `content` (`SPEC.md` §10).
 - Entry actors match the operation's role boundaries (`SPEC.md` §9.3–9.5).
-- The derived `State` matches the finding record and the lifecycle logs (`SPEC.md` §8.5, §20.10).
+- The derived `State` matches the finding record and the lifecycle logs (`SPEC.md` §8.5, §20.11).
+- Implementation was recorded only after an eligible decision: `implemented` follows an `accepted` (Author) or `accepted_risk` (Reviewer) Decision Log entry (`SPEC.md` §8.1, §8.3, §18.2).
 - No historical log entry was rewritten.
 - Reviewer-owned sections (Observation, Recommendation, Severity, Location) were not silently modified.
 - Only the intended files changed.

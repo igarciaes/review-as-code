@@ -1,5 +1,17 @@
 # Changelog
 
+## [v0.6.0] - 2026-09-15
+
+### Added
+
+- Implementation precondition: an Author MUST NOT record `implementation=implemented` unless the finding's Decision Log already records an eligible decision — `accepted` (Actor: Author) or `accepted_risk` (Actor: Reviewer). Normative in `SPEC.md` §8.1, §8.3, §18.2, and §20; enforced in `SKILL.md`.
+- New example `examples/R042/findings/F008.md` demonstrating the Reviewer-`accepted_risk` → implemented → verified path.
+
+### Changed
+
+- `SPEC.md` §9.3 now allows the Reviewer to unilaterally record an `accepted_risk` decision, enabling the implementation precondition.
+- Version references synced to RaC v0.6.0 across `SPEC.md`, `README.md`, `SKILL.md`, `AGENTS.md`, and `CHANGELOG.md`.
+
 ## [v0.5.6] - 2026-09-15
 
 ### Changed

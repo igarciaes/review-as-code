@@ -12,13 +12,13 @@ Each finding is an independent, independently writable artifact with two roles a
 - **Three dimensions: Decision, Implementation, and Verification.** They progress independently through append-only logs.
 - **State is derived.** A finding's current Decision, Implementation, and Verification values are materialised from its lifecycle logs; the logs remain authoritative.
 - **Discussion happens externally; records capture decisions and verification results, not transcripts.**
-- **No single-status workflow.** There is no transition matrix; findings close when their dimensions reach a final disposition.
+- **No single-status workflow.** There is no transition matrix; the only cross-dimension rule is that implementation requires an eligible decision. Findings close when their dimensions reach a final disposition.
 - **Git history is the timeline; no rounds or workflow state are required.**
 - **The filesystem is the index; shared mutable files are minimized.**
 
 ## Repository contents
 
-- `SPEC.md` — normative RaC v0.5.6 specification
+- `SPEC.md` — normative RaC v0.6.0 specification
 - `AGENTS.md` — instructions for agents working in this repository
 - `SKILL.md` — portable RaC agent skill
 - `examples/` — reference review records

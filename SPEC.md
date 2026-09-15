@@ -2,7 +2,7 @@
 
 ## Version
 
-**RaC v0.5.6**
+**RaC v0.6.0**
 
 ## 1. Purpose
 
@@ -349,6 +349,8 @@ The dimensions are independent. Any combination MAY occur:
 
 The specification does not define a transition matrix. Agents MUST NOT reason about legal state transitions or workflow graphs.
 
+The single exception is the implementation precondition defined in Section 8.3: an implemented finding MUST have a prior decision of `accepted` (Actor: Author) or `accepted_risk` (Actor: Reviewer). This is the only cross-dimension dependency the specification defines.
+
 ### 8.2 Decision
 
 The disposition of a finding, recorded in the Decision Log. Recommended values:
@@ -371,6 +373,8 @@ The implementation work performed for a finding, recorded in the Implementation 
 pending
 implemented
 ```
+
+An Author MUST NOT record an implementation of `implemented` unless the finding's Decision Log already records an eligible decision: `accepted` (Actor: Author) or `accepted_risk` (Actor: Reviewer). See Section 8.1.
 
 ### 8.4 Verification
 
@@ -430,6 +434,8 @@ The observation SHOULD NOT be silently rewritten by the author or any other role
 Both the author and the reviewer MAY contribute entries to the Decision Log.
 
 The author decides the disposition of the finding. The reviewer participates in finding decisions. The reviewer MUST NOT unilaterally make a decision on behalf of the author.
+
+Exception: the reviewer MAY unilaterally record an `accepted_risk` decision when accepting residual implementation risk, enabling the implementation precondition in Section 8.3.
 
 ### 9.4 Implementation Log
 
@@ -693,7 +699,7 @@ Review metadata (`schemas/review.schema.json`):
 | `Status: open` / `Status: closed` | `status` |
 | `Scope:` block | `scope` |
 | `Base: abc123` | `base` |
-| `RaC version: v0.5.6` | `rac_version` |
+| `RaC version: v0.6.0` | `rac_version` |
 | `Closed: <date>` | `closed_date` |
 | Optional `## Review Outcome` section content | `outcome` |
 
@@ -752,6 +758,8 @@ Role: Author.
 Input: target finding, relevant source files.
 
 Output: source changes.
+
+Precondition: MUST NOT record `implementation=implemented` unless the finding's Decision Log already records an eligible decision (`accepted` by the Author or `accepted_risk` by the Reviewer). See Sections 8.1 and 8.3.
 
 Append an entry to the target finding's Implementation Log and update its derived `State` when explicitly authorized to record implementation evidence.
 
@@ -818,7 +826,7 @@ Historical review records SHOULD NOT be rewritten merely because a later review 
 
 ## 20. Conformance
 
-A RaC implementation conforms to v0.5.6 when it:
+A RaC implementation conforms to v0.6.0 when it:
 
 1. supports multiple review records;
 2. provides stable review and finding IDs;
@@ -828,9 +836,10 @@ A RaC implementation conforms to v0.5.6 when it:
 6. separates discussion from the review record;
 7. distinguishes recommendations from decisions;
 8. distinguishes implementation from verification;
-9. records lifecycle progression in append-only Decision, Implementation, and Verification logs, where each log entry records its actor;
-10. derives `State` from the finding record and lifecycle logs;
-11. provides a human-readable Markdown representation.
+9. records implementation only after an eligible decision (`accepted` by the Author or `accepted_risk` by the Reviewer), per Section 8.3;
+10. records lifecycle progression in append-only Decision, Implementation, and Verification logs, where each log entry records its actor;
+11. derives `State` from the finding record and lifecycle logs;
+12. provides a human-readable Markdown representation.
 
 ## 21. Fundamental invariant
 
